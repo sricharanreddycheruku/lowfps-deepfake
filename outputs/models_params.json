@@ -1,0 +1,10 @@
+{
+  "efficientnet_b0": 4008829,
+  "efficientnet_v2_s": 20178769,
+  "convnext_tiny": 27820897,
+  "convnext_small": 49455457,
+  "convnext_base": 87567489,
+  "swin_t": 27520123,
+  "swin_s": 48838027,
+  "resnet50": 23510081
+}

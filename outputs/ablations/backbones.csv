@@ -1,0 +1,6 @@
+group,setting,run,arch,epochs,clean_auc,mean_auc,worst_auc,std_auc,best_epoch,train_seconds,chosen,img_per_s,peak_mb,params_m
+backbone,efficientnet_b0,a_bb1_e20,efficientnet_b0,20,0.8907,0.8895,0.8838,0.0025,9,719,,3010.0,734.7,4.01
+backbone,efficientnet_v2_s,b_v2s,efficientnet_v2_s,20,0.9016,0.8971,0.8878,0.0039,15,1272,,1583.2,566.7,20.18
+backbone,resnet50,b_r50,resnet50,20,0.9027,0.8998,0.8931,0.0027,7,1263,yes,1422.4,810.9,23.51
+backbone,convnext_tiny,b_cnxt,convnext_tiny,20,0.9041,0.9019,0.8942,0.0021,6,1245,yes,1139.6,1073.3,27.82
+backbone,swin_t,b_swin,swin_t,20,0.9027,0.9019,0.8932,0.0033,13,2046,yes,772.1,1561.6,27.52

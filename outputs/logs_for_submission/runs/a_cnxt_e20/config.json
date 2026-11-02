@@ -1,0 +1,22 @@
+{
+  "arch": "convnext_tiny",
+  "data_root": "data/raw/hackathon_dataset",
+  "split_csv": "data/splits/split_v1.csv",
+  "epochs": 20,
+  "lr": 0.0003,
+  "wd": 0.05,
+  "bs": 64,
+  "aug_level": "strong",
+  "label_smoothing": 0.05,
+  "seed": 42,
+  "out_dir": "outputs/runs/a_cnxt_e20",
+  "subset_frac": 1.0,
+  "num_workers": 4,
+  "no_ema": false,
+  "ema_decay": 0.99,
+  "backbone_lr_mult": 0.1,
+  "warmup_epochs": 1.0,
+  "conflict": "soft",
+  "best_score": 0.895378957875931,
+  "train_seconds": 1695.8
+}

@@ -1,0 +1,624 @@
+{
+  "threshold": 0.5,
+  "n_val": 1408,
+  "cases": {
+    "tp": 16,
+    "tn": 16,
+    "fp": 16,
+    "fn": 16
+  },
+  "stats": {
+    "resnet50": {
+      "tp": {
+        "border_ring": {
+          "mass_share": 0.08944123983383179,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.3956105709075928,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.18026071786880493,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.3346872329711914,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "tn": {
+        "border_ring": {
+          "mass_share": 0.6079747676849365,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.06636687368154526,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.2199718952178955,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.10568749904632568,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fp": {
+        "border_ring": {
+          "mass_share": 0.17907452583312988,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.34493571519851685,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.18454691767692566,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.29144197702407837,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fn": {
+        "border_ring": {
+          "mass_share": 0.5433133840560913,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.1290178894996643,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.2139081209897995,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.11376039683818817,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "robust_by_condition": {
+        "clean": {
+          "border_ring": {
+            "mass_share": 0.3326203525066376,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.24530743062496185,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.19008605182170868,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.23198288679122925,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "jpeg_q30": {
+          "border_ring": {
+            "mass_share": 0.3118637800216675,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.26259317994117737,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.18854862451553345,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.23699331283569336,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "blur_sigma2": {
+          "border_ring": {
+            "mass_share": 0.3478057384490967,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.22410006821155548,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.1908816546201706,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.23721297085285187,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "noise_std10": {
+          "border_ring": {
+            "mass_share": 0.3197647035121918,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.24745456874370575,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.20041318237781525,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.23236775398254395,
+            "area_share": 0.16583625637755103
+          }
+        }
+      },
+      "corr_with_clean": {
+        "jpeg_q30": 0.9709840267409753,
+        "blur_sigma2": 0.9407122261743476,
+        "noise_std10": 0.96352978242387
+      }
+    },
+    "convnext_small": {
+      "tp": {
+        "border_ring": {
+          "mass_share": 0.029677577316761017,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.5727586150169373,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.03400634974241257,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.36355796456336975,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "tn": {
+        "border_ring": {
+          "mass_share": 0.5617777109146118,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.09369748085737228,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.2017081081867218,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.14281868934631348,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fp": {
+        "border_ring": {
+          "mass_share": 0.06079297512769699,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.5420305728912354,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.07256881147623062,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.32460787892341614,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fn": {
+        "border_ring": {
+          "mass_share": 0.5417028665542603,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.1252647042274475,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.17242586612701416,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.1606084257364273,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "robust_by_condition": {
+        "clean": {
+          "border_ring": {
+            "mass_share": 0.2541607618331909,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.4013834297657013,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.08232740312814713,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.26212871074676514,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "jpeg_q30": {
+          "border_ring": {
+            "mass_share": 0.2562960684299469,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.3759281635284424,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.08088088780641556,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.28689315915107727,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "blur_sigma2": {
+          "border_ring": {
+            "mass_share": 0.2328266054391861,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.39783337712287903,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.07001369446516037,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.29932597279548645,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "noise_std10": {
+          "border_ring": {
+            "mass_share": 0.2444213181734085,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.4041851758956909,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.07503237575292587,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.27636393904685974,
+            "area_share": 0.16583625637755103
+          }
+        }
+      },
+      "corr_with_clean": {
+        "jpeg_q30": 0.971427930576295,
+        "blur_sigma2": 0.8972536790512414,
+        "noise_std10": 0.9808328208827679
+      }
+    },
+    "swin_t": {
+      "tp": {
+        "border_ring": {
+          "mass_share": 0.16709691286087036,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.4040890336036682,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.1347973644733429,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.29401734471321106,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "tn": {
+        "border_ring": {
+          "mass_share": 0.05526105687022209,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.0051602572202682495,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.053398627787828445,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.011180100031197071,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fp": {
+        "border_ring": {
+          "mass_share": 0.22954028844833374,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.3887001574039459,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.11878407746553421,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.26297545433044434,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fn": {
+        "border_ring": {
+          "mass_share": 0.14510738849639893,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.06201361119747162,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.023248206824064255,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.08213064074516296,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "robust_by_condition": {
+        "clean": {
+          "border_ring": {
+            "mass_share": 0.07373103499412537,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.22309140861034393,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.05625652149319649,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.14692194759845734,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "jpeg_q30": {
+          "border_ring": {
+            "mass_share": 0.09984567016363144,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.3572806417942047,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.057748597115278244,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.1517927497625351,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "blur_sigma2": {
+          "border_ring": {
+            "mass_share": 0.1207648515701294,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.26204630732536316,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.05630093440413475,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.2275543063879013,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "noise_std10": {
+          "border_ring": {
+            "mass_share": 0.09269141405820847,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.33125925064086914,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.05361953750252724,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.18909622728824615,
+            "area_share": 0.16583625637755103
+          }
+        }
+      },
+      "corr_with_clean": {
+        "jpeg_q30": 0.9974962741651611,
+        "blur_sigma2": 0.9953703997682548,
+        "noise_std10": 0.993102760375281
+      }
+    },
+    "ensemble": {
+      "tp": {
+        "border_ring": {
+          "mass_share": 0.1165357232093811,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.43903452157974243,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.12663471698760986,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.3177948296070099,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "tn": {
+        "border_ring": {
+          "mass_share": 0.5819095373153687,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.08490164577960968,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.20361778140068054,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.12957024574279785,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fp": {
+        "border_ring": {
+          "mass_share": 0.1699669361114502,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.41113731265068054,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.1317479908466339,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.28714805841445923,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fn": {
+        "border_ring": {
+          "mass_share": 0.5401180982589722,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.1294981986284256,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.1825723648071289,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.14781108498573303,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "robust_by_condition": {
+        "clean": {
+          "border_ring": {
+            "mass_share": 0.3173138201236725,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.31540733575820923,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.1325814425945282,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.23469685018062592,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "jpeg_q30": {
+          "border_ring": {
+            "mass_share": 0.3070339262485504,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.32340121269226074,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.1303965002298355,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.2391681671142578,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "blur_sigma2": {
+          "border_ring": {
+            "mass_share": 0.29515621066093445,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.32597121596336365,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.12649111449718475,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.25238320231437683,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "noise_std10": {
+          "border_ring": {
+            "mass_share": 0.29449328780174255,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.3322170078754425,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.12844984233379364,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.24484187364578247,
+            "area_share": 0.16583625637755103
+          }
+        }
+      },
+      "corr_with_clean": {
+        "jpeg_q30": 0.9812163575665517,
+        "blur_sigma2": 0.9148850674260758,
+        "noise_std10": 0.9734673031869235
+      }
+    }
+  }
+}

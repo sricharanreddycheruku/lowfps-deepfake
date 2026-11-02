@@ -1,0 +1,9 @@
+run,group,setting,chosen
+final_resnet50,final_member,resnet50 head LR 1e-3 12 epochs,yes
+final_convnext_tiny,final_member,convnext_tiny LR 3e-4 12 epochs,
+final_swin_t,final_member,swin_t LR 3e-4 12 epochs,yes
+e_cnxt_small,final_experiment,convnext_small instead of convnext_tiny,yes
+e_cnxt_288,final_experiment,convnext_tiny input 288,
+e_cnxt_cutmix,final_experiment,convnext_tiny CutMix p=0.5,
+e_cnxt_mixup,final_experiment,convnext_tiny MixUp p=0.5 alpha 0.4,
+e_cnxt_seed7,final_experiment,convnext_tiny seed 7 (seed noise),

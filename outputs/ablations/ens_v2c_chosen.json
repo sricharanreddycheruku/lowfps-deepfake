@@ -1,0 +1,47 @@
+{
+  "members": [
+    "e_cnxt_small",
+    "v2_cnxt_small_s7",
+    "v2_cnxt_small_s123",
+    "v2_swin_s"
+  ],
+  "ckpts": [
+    "outputs/runs/e_cnxt_small/best.pt",
+    "outputs/runs/v2_cnxt_small_s7/best.pt",
+    "outputs/runs/v2_cnxt_small_s123/best.pt",
+    "outputs/runs/v2_swin_s/best.pt"
+  ],
+  "fusion": "mean_logit",
+  "weights": [
+    0.25,
+    0.25,
+    0.25,
+    0.25
+  ],
+  "tta": false,
+  "threshold_policy": "fixed_0.5",
+  "threshold": 0.5,
+  "threshold_candidates": {
+    "youden_j": {
+      "threshold": 0.5091390013694763,
+      "mean_f1": 0.87899845035185,
+      "std_f1": 0.0054971242254596
+    },
+    "best_f1": {
+      "threshold": 0.5008000135421753,
+      "mean_f1": 0.8789746533270232,
+      "std_f1": 0.00544573365893313
+    },
+    "fixed_0.5": {
+      "threshold": 0.5,
+      "mean_f1": 0.8789868321516935,
+      "std_f1": 0.0054179496209377405
+    }
+  },
+  "val": {
+    "clean_auc": 0.9097915052305308,
+    "mean_auc": 0.9084802753117822,
+    "worst_auc": 0.9057041440656077,
+    "std_auc": 0.0013629901595419575
+  }
+}

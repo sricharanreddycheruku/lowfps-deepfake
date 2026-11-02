@@ -1,0 +1,84 @@
+{
+ "shipped": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t"
+ ],
+ "v2c": [
+  "e_cnxt_small",
+  "v2_cnxt_small_s7",
+  "v2_cnxt_small_s123",
+  "v2_swin_s"
+ ],
+ "bigmix": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t",
+  "v2_cnxt_small_s7",
+  "v2_cnxt_small_s123",
+  "v3_cnxt_small_s11",
+  "v2_swin_s",
+  "v3_swin_s_s42",
+  "v3_swin_s_s7"
+ ],
+ "ship_plus_new": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t",
+  "v4_effv2s",
+  "v4_regnety16",
+  "v4_maxvit_t",
+  "v4_vit_b16"
+ ],
+ "bigmix_plus_new": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t",
+  "v2_cnxt_small_s7",
+  "v2_cnxt_small_s123",
+  "v3_cnxt_small_s11",
+  "v2_swin_s",
+  "v3_swin_s_s42",
+  "v3_swin_s_s7",
+  "v4_effv2s",
+  "v4_regnety16",
+  "v4_maxvit_t",
+  "v4_vit_b16"
+ ],
+ "ship_plus_v4_effv2s": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t",
+  "v4_effv2s"
+ ],
+ "single_v4_effv2s": [
+  "v4_effv2s"
+ ],
+ "ship_plus_v4_regnety16": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t",
+  "v4_regnety16"
+ ],
+ "single_v4_regnety16": [
+  "v4_regnety16"
+ ],
+ "ship_plus_v4_maxvit_t": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t",
+  "v4_maxvit_t"
+ ],
+ "single_v4_maxvit_t": [
+  "v4_maxvit_t"
+ ],
+ "ship_plus_v4_vit_b16": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t",
+  "v4_vit_b16"
+ ],
+ "single_v4_vit_b16": [
+  "v4_vit_b16"
+ ]
+}

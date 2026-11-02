@@ -1,0 +1,15 @@
+{
+  "device": "NVIDIA GeForce RTX 4060 Ti",
+  "precision": "fp16",
+  "results": [
+    {
+      "arch": "convnext_tiny",
+      "size": 288,
+      "batch": 128,
+      "img_per_s": 680.0,
+      "ms_per_batch": 188.25,
+      "peak_mb": 1694.8,
+      "params_m": 27.82
+    }
+  ]
+}

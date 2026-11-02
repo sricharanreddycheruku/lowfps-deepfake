@@ -1,0 +1,24 @@
+run,group,setting,chosen
+base_b0_none,aug_old_recipe,aug_level=none (first recipe),
+base_b0_strong,aug_old_recipe,aug_level=strong (first recipe),
+a_ema999_e20,ema,EMA decay 0.999,
+a_ema99_e20,ema,EMA decay 0.99,yes
+a_noema_e20,ema,no EMA,
+a_ema99_e20,backbone_lr,backbone LR x0.1,
+a_bb1_e20,backbone_lr,backbone LR x1.0,yes
+a_ema99_e20,lr_bb_x0.1,head LR 3e-4,
+a_lr1e3_e20,lr_bb_x0.1,head LR 1e-3,
+b_lr1e4,lr,LR 1e-4,
+a_bb1_e20,lr,LR 3e-4,
+b_lr1e3,lr,LR 1e-3,yes
+b_lr3e3,lr,LR 3e-3,
+b_ls0,label_smoothing,label smoothing 0,
+a_bb1_e20,label_smoothing,label smoothing 0.05,yes
+b_ls01,label_smoothing,label smoothing 0.1,
+b_auglight,aug_level,aug light,
+a_bb1_e20,aug_level,aug strong,yes
+a_bb1_e20,conflict,conflict soft 0.5,
+b_drop,conflict,conflict drop,yes
+a_bb1_e20,recipe_combo,LR 3e-4 + soft,
+b_lr1e3,recipe_combo,LR 1e-3 + soft,
+b_combo,recipe_combo,LR 1e-3 + drop,yes

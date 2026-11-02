@@ -1,0 +1,32 @@
+group,setting,run,arch,epochs,clean_auc,mean_auc,worst_auc,std_auc,best_epoch,train_seconds,chosen
+aug_old_recipe,aug_level=none (first recipe),base_b0_none,efficientnet_b0,10,0.7826,0.7792,0.7297,0.0147,10,238,
+aug_old_recipe,aug_level=strong (first recipe),base_b0_strong,efficientnet_b0,10,0.7794,0.7781,0.7524,0.0096,10,239,
+ema,EMA decay 0.999,a_ema999_e20,efficientnet_b0,20,0.8613,0.857,0.8112,0.0114,20,926,
+ema,EMA decay 0.99,a_ema99_e20,efficientnet_b0,20,0.8772,0.8711,0.7904,0.0177,19,718,yes
+ema,no EMA,a_noema_e20,efficientnet_b0,20,0.8775,0.8719,0.7995,0.016,19,929,
+backbone_lr,backbone LR x0.1,a_ema99_e20,efficientnet_b0,20,0.8772,0.8711,0.7904,0.0177,19,718,
+backbone_lr,backbone LR x1.0,a_bb1_e20,efficientnet_b0,20,0.8907,0.8895,0.8838,0.0025,9,719,yes
+lr_bb_x0.1,head LR 3e-4,a_ema99_e20,efficientnet_b0,20,0.8772,0.8711,0.7904,0.0177,19,718,
+lr_bb_x0.1,head LR 1e-3,a_lr1e3_e20,efficientnet_b0,20,0.8882,0.8843,0.8612,0.0062,11,929,
+lr,LR 1e-4,b_lr1e4,efficientnet_b0,20,0.8886,0.8839,0.8641,0.0062,20,691,
+lr,LR 3e-4,a_bb1_e20,efficientnet_b0,20,0.8907,0.8895,0.8838,0.0025,9,719,
+lr,LR 1e-3,b_lr1e3,efficientnet_b0,20,0.9024,0.8988,0.8874,0.0038,8,659,yes
+lr,LR 3e-3,b_lr3e3,efficientnet_b0,20,0.9013,0.8997,0.8906,0.0024,9,723,
+label_smoothing,label smoothing 0,b_ls0,efficientnet_b0,20,0.8915,0.8898,0.8821,0.0026,9,683,
+label_smoothing,label smoothing 0.05,a_bb1_e20,efficientnet_b0,20,0.8907,0.8895,0.8838,0.0025,9,719,yes
+label_smoothing,label smoothing 0.1,b_ls01,efficientnet_b0,20,0.8911,0.8898,0.8832,0.0027,9,685,
+aug_level,aug light,b_auglight,efficientnet_b0,20,0.8938,0.8888,0.8744,0.0058,8,677,
+aug_level,aug strong,a_bb1_e20,efficientnet_b0,20,0.8907,0.8895,0.8838,0.0025,9,719,yes
+conflict,conflict soft 0.5,a_bb1_e20,efficientnet_b0,20,0.8907,0.8895,0.8838,0.0025,9,719,
+conflict,conflict drop,b_drop,efficientnet_b0,20,0.8959,0.8932,0.8795,0.004,8,686,yes
+recipe_combo,LR 3e-4 + soft,a_bb1_e20,efficientnet_b0,20,0.8907,0.8895,0.8838,0.0025,9,719,
+recipe_combo,LR 1e-3 + soft,b_lr1e3,efficientnet_b0,20,0.9024,0.8988,0.8874,0.0038,8,659,
+recipe_combo,LR 1e-3 + drop,b_combo,efficientnet_b0,20,0.9018,0.9014,0.8951,0.0024,9,477,yes
+final_member,resnet50 head LR 1e-3 12 epochs,final_resnet50,resnet50,12,0.9027,0.9008,0.8925,0.0027,10,541,yes
+final_member,convnext_tiny LR 3e-4 12 epochs,final_convnext_tiny,convnext_tiny,12,0.902,0.9005,0.8963,0.0018,4,662,
+final_member,swin_t LR 3e-4 12 epochs,final_swin_t,swin_t,12,0.9018,0.8996,0.8934,0.0027,12,795,yes
+final_experiment,convnext_small instead of convnext_tiny,e_cnxt_small,convnext_small,12,0.9062,0.9045,0.8983,0.002,7,1191,yes
+final_experiment,convnext_tiny input 288,e_cnxt_288,convnext_tiny,12,0.9042,0.9016,0.8899,0.0035,8,1298,
+final_experiment,convnext_tiny CutMix p=0.5,e_cnxt_cutmix,convnext_tiny,12,0.9012,0.9,0.895,0.0017,7,745,
+final_experiment,convnext_tiny MixUp p=0.5 alpha 0.4,e_cnxt_mixup,convnext_tiny,12,0.901,0.8995,0.8937,0.0018,5,558,
+final_experiment,convnext_tiny seed 7 (seed noise),e_cnxt_seed7,convnext_tiny,12,0.9051,0.9032,0.8967,0.002,7,666,

@@ -1,0 +1,17 @@
+{
+  "arch": "efficientnet_b0",
+  "data_root": "data/raw/hackathon_dataset",
+  "split_csv": "data/splits/split_v1.csv",
+  "epochs": 1,
+  "lr": 0.0003,
+  "wd": 0.05,
+  "bs": 16,
+  "aug_level": "strong",
+  "label_smoothing": 0.05,
+  "seed": 42,
+  "out_dir": "outputs/runs/smoke_efficientnet_b0",
+  "subset_frac": 0.05,
+  "num_workers": 0,
+  "no_ema": false,
+  "best_score": 0.630812324929972
+}

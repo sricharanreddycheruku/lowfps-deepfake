@@ -1,0 +1,9 @@
+group,setting,run,arch,epochs,clean_auc,mean_auc,worst_auc,std_auc,best_epoch,train_seconds,chosen,img_per_s,peak_mb,params_m
+final_member,resnet50 head LR 1e-3 12 epochs,final_resnet50,resnet50,12,0.9027,0.9008,0.8925,0.0027,10,541,yes,1422.3,808.5,23.51
+final_member,convnext_tiny LR 3e-4 12 epochs,final_convnext_tiny,convnext_tiny,12,0.902,0.9005,0.8963,0.0018,4,662,,1140.9,1070.8,27.82
+final_member,swin_t LR 3e-4 12 epochs,final_swin_t,swin_t,12,0.9018,0.8996,0.8934,0.0027,12,795,yes,772.2,1555.1,27.52
+final_experiment,convnext_small instead of convnext_tiny,e_cnxt_small,convnext_small,12,0.9062,0.9045,0.8983,0.002,7,1191,yes,706.5,1153.3,49.46
+final_experiment,convnext_tiny input 288,e_cnxt_288,convnext_tiny,12,0.9042,0.9016,0.8899,0.0035,8,1298,,680.0,1694.8,27.82
+final_experiment,convnext_tiny CutMix p=0.5,e_cnxt_cutmix,convnext_tiny,12,0.9012,0.9,0.895,0.0017,7,745,,1140.9,1070.8,27.82
+final_experiment,convnext_tiny MixUp p=0.5 alpha 0.4,e_cnxt_mixup,convnext_tiny,12,0.901,0.8995,0.8937,0.0018,5,558,,1140.9,1070.8,27.82
+final_experiment,convnext_tiny seed 7 (seed noise),e_cnxt_seed7,convnext_tiny,12,0.9051,0.9032,0.8967,0.002,7,666,,1140.9,1070.8,27.82

@@ -1,0 +1,66 @@
+{
+  "train_counts": {
+    "folders": {
+      "real": 3478,
+      "fake": 3522
+    },
+    "metadata_csv": {
+      "real": 3478,
+      "fake": 3522
+    },
+    "missing_from_metadata": [],
+    "missing_from_folders": [],
+    "label_disagreements": [],
+    "source_of_truth": "folders"
+  },
+  "test_count": 3000,
+  "test_count_expected": 3000,
+  "real": {
+    "count": 3478,
+    "sizes": {
+      "224x224": 3478
+    },
+    "modes": {
+      "RGB": 3478
+    },
+    "jpeg_quality_est": {
+      "mean": 92.0,
+      "min": 92,
+      "max": 92
+    },
+    "file_size_bytes": {
+      "mean": 14005.16129959747,
+      "min": 3137,
+      "max": 40530
+    },
+    "mean_brightness": {
+      "mean": 117.08480938929371,
+      "min": 11.510642538265307,
+      "max": 244.8824537627551
+    }
+  },
+  "fake": {
+    "count": 3522,
+    "sizes": {
+      "224x224": 3522
+    },
+    "modes": {
+      "RGB": 3522
+    },
+    "jpeg_quality_est": {
+      "mean": 92.0,
+      "min": 92,
+      "max": 92
+    },
+    "file_size_bytes": {
+      "mean": 13762.13827370812,
+      "min": 2546,
+      "max": 43017
+    },
+    "mean_brightness": {
+      "mean": 120.11935736915837,
+      "min": 12.470603475765307,
+      "max": 244.80825494260205
+    }
+  }
+}

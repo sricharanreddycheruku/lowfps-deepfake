@@ -1,0 +1,44 @@
+{
+  "members": [
+    "e_cnxt_small",
+    "v2_cnxt_small_s7",
+    "v2_swin_s"
+  ],
+  "ckpts": [
+    "outputs/runs/e_cnxt_small/best.pt",
+    "outputs/runs/v2_cnxt_small_s7/best.pt",
+    "outputs/runs/v2_swin_s/best.pt"
+  ],
+  "fusion": "mean_logit",
+  "weights": [
+    0.3333333333333333,
+    0.3333333333333333,
+    0.3333333333333333
+  ],
+  "tta": false,
+  "threshold_policy": "best_f1",
+  "threshold": 0.48100000619888306,
+  "threshold_candidates": {
+    "youden_j": {
+      "threshold": 0.5159450769424438,
+      "mean_f1": 0.8797216592806921,
+      "std_f1": 0.006053435125977224
+    },
+    "best_f1": {
+      "threshold": 0.48100000619888306,
+      "mean_f1": 0.8788537656137371,
+      "std_f1": 0.005472815538729903
+    },
+    "fixed_0.5": {
+      "threshold": 0.5,
+      "mean_f1": 0.8795032584568305,
+      "std_f1": 0.005656064886889566
+    }
+  },
+  "val": {
+    "clean_auc": 0.9102082122562314,
+    "mean_auc": 0.9089303662775354,
+    "worst_auc": 0.9062066140384863,
+    "std_auc": 0.001424828327368857
+  }
+}

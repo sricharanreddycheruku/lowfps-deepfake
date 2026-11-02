@@ -1,0 +1,75 @@
+{
+  "note": "Local runs below were measured on an NVIDIA GeForce RTX 4060 Ti (16 GB), not a T4. The real Tesla T4 measurement is in 't4_kaggle'.",
+  "gpu": "NVIDIA GeForce RTX 4060 Ti",
+  "host_cpu_threads": 24,
+  "torch": "2.11.0",
+  "precision": "fp16 autocast + channels_last",
+  "ensemble": "resnet50 + convnext_small + swin_t, flip TTA, mean logit",
+  "images": 3000,
+  "num_workers": 4,
+  "runs": [
+    {
+      "batch_size": 128,
+      "wall_seconds": 26.8,
+      "peak_vram_mib": 1841
+    },
+    {
+      "batch_size": 64,
+      "wall_seconds": 24.9,
+      "peak_vram_mib": 1120
+    },
+    {
+      "batch_size": 32,
+      "wall_seconds": 23.4,
+      "peak_vram_mib": 759
+    }
+  ],
+  "wall_seconds_includes": "bundle load, model build, data loading, inference, CSV write",
+  "peak_vram_is": "torch.cuda.max_memory_allocated (default batch 128)",
+  "reproducibility": {
+    "same_batch_size_two_runs_max_abs_diff": 0.0,
+    "fresh_venv_vs_existing_env_max_abs_diff": 0.0,
+    "batch_64_vs_128_max_abs_diff": 0.000155,
+    "batch_32_vs_128_max_abs_diff": 0.000169,
+    "label_flips_across_batch_sizes": 1,
+    "val_1408_vs_ensemble_val_preds_max_abs_diff": 5.3e-07,
+    "cpu_fp32_vs_gpu_fp16_50_images_max_abs_diff": 0.000547
+  },
+  "cpu_smoke_test_50_images_seconds": 23.8,
+  "t4_kaggle": {
+    "gpu": "Tesla T4 (15 GB)",
+    "python": "3.13",
+    "torch": "2.11.0+cu128",
+    "torchvision": "0.26.0",
+    "numpy": "2.1.3",
+    "pillow": "13.0.0",
+    "images": 3000,
+    "batch_size": 128,
+    "tta": "horizontal flip",
+    "precision": "fp16 autocast + channels_last",
+    "runs": [
+      {
+        "name": "cold",
+        "wall_seconds": 93.1,
+        "script_seconds": 86.0
+      },
+      {
+        "name": "warm",
+        "wall_seconds": 55.7,
+        "script_seconds": 51.9
+      }
+    ],
+    "peak_vram_mib": 1841,
+    "vs_shipped_predictions": {
+      "rows": 3000,
+      "max_abs_confidence_diff": 0.00019,
+      "label_flips": 1
+    },
+    "members": [
+      "final_resnet50",
+      "e_cnxt_small",
+      "final_swin_t"
+    ],
+    "fusion": "mean_logit"
+  }
+}

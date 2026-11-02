@@ -1,0 +1,6 @@
+run,group,setting,chosen
+a_bb1_e20,backbone,efficientnet_b0,
+b_v2s,backbone,efficientnet_v2_s,
+b_r50,backbone,resnet50,yes
+b_cnxt,backbone,convnext_tiny,yes
+b_swin,backbone,swin_t,yes
