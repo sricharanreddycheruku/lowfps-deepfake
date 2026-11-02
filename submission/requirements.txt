@@ -1,0 +1,8 @@
+# Inference dependencies for Python 3.10. Tested with these exact versions on
+# Linux, with the default PyPI torch wheel (CUDA 13.0) and with the CUDA 12.8
+# build; both gave identical predictions. Install the CUDA build that matches
+# your driver if the default wheel does not.
+torch==2.11.0
+torchvision==0.26.0
+numpy==2.2.6
+pillow==12.3.0
