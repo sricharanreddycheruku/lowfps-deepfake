@@ -1,0 +1,31 @@
+# tooling and notes that must never be published
+CLAUDE.md
+AGENTS.md
+.claude/
+.build/
+
+# credentials and private files
+GPU ACCESS*.xlsx
+*.xlsx
+Screenshot*.png
+
+# dataset (provided by the organisers)
+data/raw/
+data/*.zip
+hackathon_dataset.zip
+
+# weights and checkpoints (too large for GitHub; share via Drive)
+*.pt
+*.pth
+*.ckpt
+*.onnx
+tf_model/
+saved_model/
+
+# logs, caches, environments
+*.log
+__pycache__/
+*.pyc
+.venv*/
+venv*/
+.ipynb_checkpoints/
