@@ -1,0 +1,42 @@
+{
+  "device": "NVIDIA GeForce RTX 4060 Ti",
+  "precision": "fp16",
+  "results": [
+    {
+      "arch": "convnext_small_22k",
+      "size": 224,
+      "batch": 128,
+      "img_per_s": 704.8,
+      "ms_per_batch": 181.62,
+      "peak_mb": 1303.7,
+      "params_m": 49.46
+    },
+    {
+      "arch": "swin_small_22k",
+      "size": 224,
+      "batch": 128,
+      "img_per_s": 477.9,
+      "ms_per_batch": 267.84,
+      "peak_mb": 1791.3,
+      "params_m": 48.84
+    },
+    {
+      "arch": "effv2s_21k",
+      "size": 224,
+      "batch": 128,
+      "img_per_s": 1502.6,
+      "ms_per_batch": 85.19,
+      "peak_mb": 717.1,
+      "params_m": 20.18
+    },
+    {
+      "arch": "convnext_small",
+      "size": 224,
+      "batch": 128,
+      "img_per_s": 705.5,
+      "ms_per_batch": 181.44,
+      "peak_mb": 1157.3,
+      "params_m": 49.46
+    }
+  ]
+}

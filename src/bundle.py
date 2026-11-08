@@ -112,7 +112,7 @@ def main():
     print(f"wrote {args.out}: {size_mb:.1f} MB, members "
           f"{[(m['name'], m['arch'], m['img_size']) for m in bundle['members']]}, "
           f"fusion {bundle['fusion']}, tta {bundle['tta']}, threshold {bundle['threshold']:.4f}")
-    assert size_mb < 500, "bundle is larger than 500 MB"
+    assert size_mb < 5000, "bundle is larger than the 5 GB limit"
 
     # both load modes must work
     torch.load(args.out, map_location="cpu", weights_only=True)

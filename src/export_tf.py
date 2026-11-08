@@ -77,6 +77,188 @@ def rewrite_gelu(module):
             rewrite_gelu(child)
 
 
+class StaticWindowAttention(torch.nn.Module):
+    """Swin window attention for one fixed input size and batch.
+
+    The relative position bias and the shifted-window mask depend only on the
+    resolution, so they are computed once and stored as constants. The forward
+    pass is plain reshape / transpose / matmul / softmax (the roll is a slice and
+    a concat), which onnx2tf converts reliably. Same function as the torchvision
+    module in eval mode (checked by check_swin_rewrite).
+    """
+
+    def __init__(self, attn, batch, height, width):
+        super().__init__()
+        self.batch, self.height, self.width = batch, height, width
+        self.heads = attn.num_heads
+        self.win = list(attn.window_size)
+        shift = list(attn.shift_size)
+        # torchvision drops the shift when the window covers the whole map
+        self.shift = [0 if self.win[0] >= height else shift[0],
+                      0 if self.win[1] >= width else shift[1]]
+        self.qkv, self.proj = attn.qkv, attn.proj
+        n = self.win[0] * self.win[1]
+        self.n_tokens = n
+        self.n_win = (height // self.win[0]) * (width // self.win[1])
+        with torch.no_grad():
+            bias = attn.get_relative_position_bias().detach().reshape(1, self.heads, n, n)
+        self.register_buffer("bias", bias)
+        if sum(self.shift) > 0:
+            self.register_buffer("mask", self.make_mask())
+        else:
+            self.mask = None
+
+    def make_mask(self):
+        h, w = self.height, self.width
+        wh, ww = self.win
+        sh, sw = self.shift
+        m = torch.zeros(h, w)
+        count = 0
+        for hs in ((0, -wh), (-wh, -sh), (-sh, None)):
+            for ws in ((0, -ww), (-ww, -sw), (-sw, None)):
+                m[hs[0]:hs[1], ws[0]:ws[1]] = count
+                count += 1
+        m = m.view(h // wh, wh, w // ww, ww).permute(0, 2, 1, 3).reshape(self.n_win, wh * ww)
+        diff = m.unsqueeze(1) - m.unsqueeze(2)
+        diff = diff.masked_fill(diff != 0, -100.0).masked_fill(diff == 0, 0.0)
+        return diff.reshape(self.n_win, 1, wh * ww, wh * ww)
+
+    @staticmethod
+    def roll(x, shift, dim):
+        """torch.roll along one dim as slice + concat (the shift may be negative)."""
+        k = shift % x.shape[dim]
+        if k == 0:
+            return x
+        head = x.narrow(dim, x.shape[dim] - k, k)
+        tail = x.narrow(dim, 0, x.shape[dim] - k)
+        return torch.cat([head, tail], dim=dim)
+
+    def forward(self, x):
+        b, h, w, c = self.batch, self.height, self.width, x.shape[-1]
+        wh, ww = self.win
+        if self.shift[0] or self.shift[1]:
+            x = self.roll(self.roll(x, -self.shift[0], 1), -self.shift[1], 2)
+        # windows are ordered window-major (window, batch) so that the mask below
+        # is a 4-D broadcast, which onnx2tf handles; a 5-D one it does not
+        x = x.reshape(b, h // wh, wh, w // ww, ww, c).permute(1, 3, 0, 2, 4, 5)
+        x = x.reshape(self.n_win * b, self.n_tokens, c)
+        qkv = self.qkv(x).reshape(self.n_win * b, self.n_tokens, 3, self.heads, c // self.heads)
+        qkv = qkv.permute(2, 0, 3, 1, 4)
+        q, k, v = qkv[0] * (c // self.heads) ** -0.5, qkv[1], qkv[2]
+        attn = q.matmul(k.transpose(-2, -1)) + self.bias
+        if self.mask is not None:
+            attn = attn.reshape(self.n_win, b * self.heads, self.n_tokens, self.n_tokens) + self.mask
+            attn = attn.reshape(self.n_win * b, self.heads, self.n_tokens, self.n_tokens)
+        attn = torch.softmax(attn, dim=-1)
+        x = attn.matmul(v).transpose(1, 2).reshape(self.n_win * b, self.n_tokens, c)
+        x = self.proj(x)
+        x = x.reshape(h // wh, w // ww, b, wh, ww, c).permute(2, 0, 3, 1, 4, 5).reshape(b, h, w, c)
+        if self.shift[0] or self.shift[1]:
+            x = self.roll(self.roll(x, self.shift[0], 1), self.shift[1], 2)
+        return x
+
+
+def rewrite_swin(model, size, batch):
+    """Replaces every window attention of a torchvision Swin by StaticWindowAttention."""
+    from torchvision.models.swin_transformer import ShiftedWindowAttention
+    attns = [m for m in model.modules() if isinstance(m, ShiftedWindowAttention)]
+    shapes = {}
+    hooks = [m.register_forward_pre_hook(lambda mod, inp: shapes.__setitem__(mod, inp[0].shape[1:3]))
+             for m in attns]
+    with torch.no_grad():
+        model(torch.zeros(1, 3, size, size))
+    for hook in hooks:
+        hook.remove()
+    for parent in list(model.modules()):
+        for name, child in list(parent.named_children()):
+            if child in shapes:
+                height, width = shapes[child]
+                setattr(parent, name, StaticWindowAttention(child, batch, int(height), int(width)))
+
+
+def check_swin_rewrite(model, size, batch):
+    """Returns (max abs logit diff to the torchvision model, the rewritten copy)."""
+    import copy
+    static = copy.deepcopy(model)
+    rewrite_swin(static, size, batch)
+    x = torch.randn(batch, 3, size, size)
+    with torch.no_grad():
+        return float((model(x) - static(x)).abs().max()), static
+
+
+def build_swin_savedmodel(model, size, batch, out_dir):
+    """Writes a TensorFlow SavedModel of a (rewritten) torchvision Swin.
+
+    onnx2tf cannot convert the window attention of Swin (its layout heuristics
+    fail on the 4-D attention tensors), so the network is rebuilt directly in
+    TensorFlow ops from the PyTorch weights and the constants of
+    StaticWindowAttention. Input: (batch, size, size, 3) float32, already
+    normalised; output: (batch, 1) logits.
+    """
+    import tensorflow as tf
+    from torchvision.models.swin_transformer import PatchMerging, SwinTransformerBlock
+
+    def const(t):
+        return tf.constant(t.detach().cpu().numpy())
+
+    def layer_norm(x, ln):
+        g, b = const(ln.weight), const(ln.bias)
+        mu = tf.reduce_mean(x, -1, keepdims=True)
+        var = tf.reduce_mean(tf.square(x - mu), -1, keepdims=True)
+        return (x - mu) * tf.math.rsqrt(var + ln.eps) * g + b
+
+    def linear(x, lin):
+        y = tf.matmul(x, const(lin.weight.t()))
+        return y + const(lin.bias) if lin.bias is not None else y
+
+    def attention(x, a):
+        h, w, c, n, nw, heads = a.height, a.width, x.shape[-1], a.n_tokens, a.n_win, a.heads
+        wh, ww = a.win
+        if a.shift[0] or a.shift[1]:
+            x = tf.roll(x, shift=[-a.shift[0], -a.shift[1]], axis=[1, 2])
+        x = tf.reshape(x, [batch, h // wh, wh, w // ww, ww, c])
+        x = tf.reshape(tf.transpose(x, [1, 3, 0, 2, 4, 5]), [nw * batch, n, c])
+        qkv = tf.transpose(tf.reshape(linear(x, a.qkv), [nw * batch, n, 3, heads, c // heads]),
+                           [2, 0, 3, 1, 4])
+        q, k, v = qkv[0] * (c // heads) ** -0.5, qkv[1], qkv[2]
+        att = tf.matmul(q, k, transpose_b=True) + const(a.bias)
+        if a.mask is not None:
+            att = tf.reshape(att, [nw, batch * heads, n, n]) + const(a.mask)
+            att = tf.reshape(att, [nw * batch, heads, n, n])
+        x = tf.matmul(tf.nn.softmax(att, axis=-1), v)
+        x = linear(tf.reshape(tf.transpose(x, [0, 2, 1, 3]), [nw * batch, n, c]), a.proj)
+        x = tf.reshape(x, [h // wh, w // ww, batch, wh, ww, c])
+        x = tf.reshape(tf.transpose(x, [2, 0, 3, 1, 4, 5]), [batch, h, w, c])
+        if a.shift[0] or a.shift[1]:
+            x = tf.roll(x, shift=[a.shift[0], a.shift[1]], axis=[1, 2])
+        return x
+
+    def forward(images):
+        stem = model.features[0]
+        x = tf.nn.conv2d(images, const(stem[0].weight.permute(2, 3, 1, 0)), strides=4, padding="VALID")
+        x = layer_norm(x + const(stem[0].bias), stem[2])
+        for stage in list(model.features)[1:]:
+            if isinstance(stage, PatchMerging):
+                x = tf.concat([x[:, 0::2, 0::2], x[:, 1::2, 0::2], x[:, 0::2, 1::2], x[:, 1::2, 1::2]], -1)
+                x = linear(layer_norm(x, stage.norm), stage.reduction)
+                continue
+            for block in stage:
+                assert isinstance(block, SwinTransformerBlock)
+                x = x + attention(layer_norm(x, block.norm1), block.attn)
+                y = linear(layer_norm(x, block.norm2), block.mlp[0])
+                x = x + linear(tf.nn.gelu(y, approximate=False), block.mlp[3])
+        x = tf.reduce_mean(layer_norm(x, model.norm), axis=[1, 2])
+        return linear(x, model.head[-1])
+
+    module = tf.Module()
+    module.serve = tf.function(
+        lambda images: {"logits": forward(images)},
+        input_signature=[tf.TensorSpec([batch, size, size, 3], tf.float32, name="images")])
+    if os.path.isdir(out_dir):
+        shutil.rmtree(out_dir)
+    tf.saved_model.save(module, out_dir, signatures={"serving_default": module.serve})
+
+
 def export_onnx(model, size, path, static_batch=None):
     """Dynamic batch axis by default; a fixed batch when static_batch is given."""
     dummy = torch.randn(static_batch or 2, 3, size, size)
@@ -87,11 +269,11 @@ def export_onnx(model, size, path, static_batch=None):
     )
 
 
-def check_onnx(model, size, path):
+def check_onnx(model, size, path, batch=3):
     import onnxruntime as ort
     sess = ort.InferenceSession(path, providers=["CPUExecutionProvider"])
-    # a batch size different from the trace batch checks the dynamic axis
-    x = torch.randn(3, 3, size, size)
+    # for a dynamic export a batch different from the trace batch checks the axis
+    x = torch.randn(batch, 3, size, size)
     with torch.no_grad():
         ref = model(x).numpy()
     got = sess.run(None, {"images": x.numpy()})[0]
@@ -157,41 +339,41 @@ def run_export(args):
             old = json.load(f)
         meta["members"] = [x for x in old["members"] if x["arch"] not in args.only]
         meta["failed"] = [x for x in old["failed"] if x["arch"] not in args.only]
+    archs = [m["arch"] for m in bundle["members"]]
     for m in bundle["members"]:
         arch, size = m["arch"], int(m["img_size"])
         if args.only and arch not in args.only:
             continue
+        # seeds of one arch need their own directory
+        tag = m["name"] if archs.count(arch) > 1 else arch
         print(f"[{arch}] exporting to ONNX", flush=True)
         try:
             model = build_model(arch, pretrained=False)
             model.load_state_dict(m["state_dict"])
             model.eval()
             rewrite_gelu(model)
-            tf_dir = os.path.join(args.out, arch)
+            tf_dir = os.path.join(args.out, tag)
             static_batch = None
-            onnx_path = os.path.join(args.work, f"{arch}.onnx")
-            export_onnx(model, size, onnx_path)
-            onnx_diff = check_onnx(model, size, onnx_path)
-            print(f"[{arch}] onnx vs torch max abs logit diff {onnx_diff:.2e}", flush=True)
-            error = convert_to_tf(onnx_path, tf_dir, args.work)
-            if error:
-                # second try: fixed batch, which onnx2tf handles for attention blocks
-                print(f"[{arch}] dynamic batch failed, retrying with batch {args.static_batch}",
-                      flush=True)
+            onnx_path = os.path.join(args.work, f"{tag}.onnx")
+            if arch.startswith("swin"):
+                # fixed batch, rebuilt in TensorFlow ops (see build_swin_savedmodel)
                 static_batch = args.static_batch
-                onnx_path = os.path.join(args.work, f"{arch}_b{static_batch}.onnx")
-                export_onnx(model, size, onnx_path, static_batch)
+                rewrite_diff, model = check_swin_rewrite(model, size, static_batch)
+                print(f"[{arch}] static rewrite vs torchvision max abs logit diff {rewrite_diff:.2e}",
+                      flush=True)
+                build_swin_savedmodel(model, size, static_batch, tf_dir)
+                onnx_diff, error = None, None
+            else:
+                export_onnx(model, size, onnx_path)
+                onnx_diff = check_onnx(model, size, onnx_path)
+                print(f"[{arch}] onnx vs torch max abs logit diff {onnx_diff:.2e}", flush=True)
                 error = convert_to_tf(onnx_path, tf_dir, args.work)
-                auto = os.path.join(args.work, f"{arch}_b{static_batch}_auto.json")
-                if error and os.path.exists(auto):
-                    print(f"[{arch}] retrying with the parameter replacement file", flush=True)
-                    error = convert_to_tf(onnx_path, tf_dir, args.work, prf=auto)
             if error:
                 raise RuntimeError("onnx2tf failed:\n" + error)
             in_name, out_name = signature_names(tf_dir)
             meta["members"].append({
                 "name": m["name"], "arch": arch, "img_size": size, "weight": float(m["weight"]),
-                "dir": arch, "batch": static_batch, "input": in_name, "output": out_name,
+                "dir": tag, "batch": static_batch, "input": in_name, "output": out_name,
                 "onnx_max_abs_logit_diff": onnx_diff,
             })
             print(f"[{arch}] converted ({in_name} -> {out_name})", flush=True)
@@ -329,7 +511,7 @@ def main():
     parser.add_argument("--out", default="tf_model", help="output directory for the SavedModels")
     parser.add_argument("--work", default="work_tf", help="scratch directory for ONNX files")
     parser.add_argument("--static_batch", type=int, default=16,
-                        help="fixed batch used when a member does not convert with a dynamic one")
+                        help="fixed batch of the Swin SavedModel (the TF script pads the last batch)")
     parser.add_argument("--only", nargs="*", default=None, help="export only these archs")
     parser.add_argument("--parity", action="store_true", help="compare TF and PyTorch instead of exporting")
     parser.add_argument("--split_csv", default="data/splits/split_v1.csv")

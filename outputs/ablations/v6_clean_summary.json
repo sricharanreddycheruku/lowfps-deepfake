@@ -1,0 +1,19 @@
+{
+  "runs": [
+    "v6_s0_cnxt_s_v1",
+    "v6_s0_cnxt_s_v2",
+    "v6_s0_cnxt_s_v3",
+    "v6_s0_cnxt_s_v4"
+  ],
+  "base_split": "data/splits/split_v1.csv",
+  "n_candidates": 5512,
+  "oof_auc": 0.9077244062070996,
+  "thresholds": {
+    "real": 0.7722161554188525,
+    "fake": 0.8068431096253046
+  },
+  "n_flagged": 463,
+  "n_flagged_real": 238,
+  "n_flagged_fake": 225,
+  "n_train_after": 5129
+}

@@ -1,0 +1,98 @@
+{
+ "shipped": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t"
+ ],
+ "shipped_crop90": {
+  "members": [
+   "final_resnet50",
+   "e_cnxt_small",
+   "final_swin_t"
+  ],
+  "views": [
+   "orig",
+   "flip",
+   "crop90"
+  ]
+ },
+ "shipped_plus_srm_b0": {
+  "members": [
+   "final_resnet50",
+   "e_cnxt_small",
+   "final_swin_t",
+   "v5_srm_b0"
+  ],
+  "weights": [
+   0.2666666667,
+   0.2666666667,
+   0.2666666667,
+   0.2
+  ]
+ },
+ "single_srm_b0": [
+  "v5_srm_b0"
+ ],
+ "shipped_plus_dct_b0": {
+  "members": [
+   "final_resnet50",
+   "e_cnxt_small",
+   "final_swin_t",
+   "v5_dct_b0"
+  ],
+  "weights": [
+   0.2666666667,
+   0.2666666667,
+   0.2666666667,
+   0.2
+  ]
+ },
+ "single_dct_b0": [
+  "v5_dct_b0"
+ ],
+ "shipped_plus_patch_b0": {
+  "members": [
+   "final_resnet50",
+   "e_cnxt_small",
+   "final_swin_t",
+   "v5_patch_b0"
+  ],
+  "weights": [
+   0.2666666667,
+   0.2666666667,
+   0.2666666667,
+   0.2
+  ]
+ },
+ "single_patch_b0": [
+  "v5_patch_b0"
+ ],
+ "shipped_swap_sam": {
+  "members": [
+   "final_resnet50",
+   "v5_cnxt_s_sam_s42",
+   "final_swin_t"
+  ]
+ },
+ "shipped_swap_elr": {
+  "members": [
+   "final_resnet50",
+   "v5_cnxt_s_elr_s42",
+   "final_swin_t"
+  ]
+ },
+ "shipped_swap_facecut": {
+  "members": [
+   "final_resnet50",
+   "v5_cnxt_s_facecut",
+   "final_swin_t"
+  ]
+ },
+ "shipped_swap_gridmask": {
+  "members": [
+   "final_resnet50",
+   "v5_cnxt_s_gridmask",
+   "final_swin_t"
+  ]
+ }
+}

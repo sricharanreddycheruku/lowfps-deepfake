@@ -34,9 +34,9 @@ COLORS = ["#2b6cb0", "#c05621", "#2f855a"]
 
 
 def draw_architecture(path):
-    fig, ax = plt.subplots(figsize=(9.0, 3.3))
+    fig, ax = plt.subplots(figsize=(9.0, 4.6))
     ax.set_xlim(0, 18)
-    ax.set_ylim(0, 6.6)
+    ax.set_ylim(0, 9.6)
     ax.axis("off")
 
     def box(x, y, w, h, text, fc="#edf2f7", ec="#4a5568", size=8.5):
@@ -48,20 +48,23 @@ def draw_architecture(path):
         ax.annotate("", xy=(x1, y1), xytext=(x0, y0),
                     arrowprops=dict(arrowstyle="->", color="#4a5568", lw=1.0))
 
-    box(0.2, 2.5, 2.6, 1.6, "224x224 face\nJPEG\nResize, ToTensor,\nImageNet normalise")
-    box(3.7, 2.5, 2.2, 1.6, "Original +\nhorizontal flip\n(2 passes)")
-    arrow(2.9, 3.3, 3.65, 3.3)
-    ys = [4.9, 2.9, 0.9]
-    names = ["ResNet-50\n23.5M params", "ConvNeXt-Small\n49.5M params", "Swin-T\n27.5M params"]
-    for y, name, col in zip(ys, names, COLORS):
-        box(7.0, y, 3.2, 1.4, name, fc="#ffffff", ec=col)
-        arrow(6.0, 3.3, 6.95, y + 0.7)
-        box(10.9, y + 0.2, 2.2, 1.0, "1 logit\n(Dropout + Linear)", size=7.5)
-        arrow(10.25, y + 0.7, 10.85, y + 0.7)
-        arrow(13.15, y + 0.7, 13.75, 3.3)
-    box(13.8, 2.5, 2.2, 1.6, "Mean of\nlogits over\n3 members x\n2 views")
-    arrow(16.05, 3.3, 16.6, 3.3)
-    box(16.6, 2.5, 1.3, 1.6, "sigmoid\nP(fake)\n>= 0.5", size=8)
+    mid = 4.8
+    box(0.2, mid - 0.8, 2.6, 1.6, "224x224 face\nJPEG\nResize, ToTensor,\nImageNet normalise")
+    box(3.7, mid - 0.8, 2.2, 1.6, "Original +\nhorizontal flip\n(2 passes)")
+    arrow(2.9, mid, 3.65, mid)
+    names = ["ResNet-50 (23.5M)", "ConvNeXt-Small (49.5M)", "Swin-T (27.5M)"]
+    ys = [8.0 - 1.55 * i for i in range(6)]
+    for i, y in enumerate(ys):
+        col = COLORS[i // 2]
+        seed = (42, 7)[i % 2]
+        box(7.0, y, 3.2, 1.1, f"{names[i // 2]}\nseed {seed}", fc="#ffffff", ec=col, size=8)
+        arrow(6.0, mid, 6.95, y + 0.55)
+        box(10.9, y + 0.1, 2.2, 0.9, "1 logit\n(Dropout + Linear)", size=7.5)
+        arrow(10.25, y + 0.55, 10.85, y + 0.55)
+        arrow(13.15, y + 0.55, 13.75, mid)
+    box(13.8, mid - 0.8, 2.2, 1.6, "Mean of\nlogits over\n6 members x\n2 views")
+    arrow(16.05, mid, 16.6, mid)
+    box(16.6, mid - 0.8, 1.3, 1.6, "sigmoid\nP(fake)\n>= 0.5", size=8)
     fig.tight_layout(pad=0.2)
     fig.savefig(path, dpi=140)
     plt.close(fig)

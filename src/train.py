@@ -3,7 +3,7 @@
 CLI mirrors the plan: --arch --data_root --split_csv --epochs --lr --wd --bs
 --aug_level --label_smoothing --seed --out_dir (plus a few knobs needed to
 make a CPU smoke run fast: --subset_frac, --num_workers, --no_ema) and the
-recipe knobs used by the Chunk 5 ablations: --ema_decay, --backbone_lr_mult,
+recipe knobs used by the ablations: --ema_decay, --backbone_lr_mult,
 --warmup_epochs, --conflict {soft,drop}.
 
 Recipe: BCEWithLogits with label smoothing on the noisy labels, AdamW with
@@ -14,8 +14,7 @@ fixed seeds, channels_last memory format.
 Each epoch reports clean val AUC and a fast "robust" val AUC: the mean AUC
 over three fixed degradations (JPEG q50, Gaussian blur sigma 1, Gaussian
 noise std 10) applied deterministically to the val images. This is a cheap
-stand-in for the full variant suite in src/robust_eval.py (Chunk 4, not
-written yet) so training can already checkpoint on a signal that rewards
+stand-in for the full variant suite in src/robust_eval.py so training can checkpoint on a signal that rewards
 robustness, not just clean accuracy. The checkpoint metric is the mean of
 clean and robust AUC.
 
@@ -47,7 +46,7 @@ from PIL import Image, ImageFilter
 from sklearn.metrics import roc_auc_score
 from torch.utils.data import DataLoader, Dataset
 
-from augment import build_eval_transform, build_train_transform
+from augment import SelfBlend, build_eval_transform, build_train_transform
 from models import build_model, get_head_module
 
 
@@ -79,9 +78,12 @@ def subsample(rows, frac, seed):
 
 
 class FaceDataset(Dataset):
-    def __init__(self, rows, transform, soft=True):
+    def __init__(self, rows, transform, soft=True, sbi_p=0.0):
         self.rows = rows
         self.transform = transform
+        # probability that a hard-real image is replaced by a self-blended
+        # pseudo-fake (target 1) before the train transform
+        self.sbi_p = sbi_p
         # val rows must be scored against hard labels, soft 0.5 targets
         # only make sense as training targets
         self.soft = soft
@@ -92,9 +94,13 @@ class FaceDataset(Dataset):
     def __getitem__(self, idx):
         row = self.rows[idx]
         img = Image.open(row["path"]).convert("RGB")
-        img = self.transform(img)
         target = float(row["soft_label"] if self.soft else row["label"])
-        return img, target
+        if self.sbi_p > 0 and target == 0.0 and random.random() < self.sbi_p:
+            # python's random is reseeded per DataLoader worker, numpy's is not
+            img = SelfBlend(np.random.RandomState(random.getrandbits(32)))(img)
+            target = 1.0
+        img = self.transform(img)
+        return img, target, idx
 
 
 # the three fixed degradations used for the fast per-epoch robustness
@@ -137,7 +143,7 @@ class RobustEvalDataset(Dataset):
         img = _apply_robust_variant(img, self.variant, seed=idx)
         img = self.eval_transform(img)
         target = float(row["label"])
-        return img, target
+        return img, target, idx
 
 
 def _layer_index(arch, name, n_features):
@@ -205,6 +211,56 @@ class EMA:
         model.load_state_dict(self.shadow)
 
 
+def sam_step(model, optimizer, scaler, compute_loss, loss, rho):
+    """Sharpness-aware step. `loss` is the already-built first-pass loss;
+    `compute_loss` reruns forward on the same batch. Gradients are unscaled
+    before the perturbation (AMP), the step is skipped on inf/nan."""
+    scaler.scale(loss).backward()
+    scaler.unscale_(optimizer)
+    params = [p for g in optimizer.param_groups for p in g["params"] if p.grad is not None]
+    norm = torch.norm(torch.stack([p.grad.norm(2) for p in params]), 2)
+    if not torch.isfinite(norm):
+        # scaler.step sees the inf from unscale_ and skips; update lowers the scale
+        scaler.step(optimizer)
+        scaler.update()
+        return
+    scale = rho / (norm + 1e-12)
+    eps = []
+    with torch.no_grad():
+        for p in params:
+            e = p.grad * scale
+            p.add_(e)
+            eps.append(e)
+    optimizer.zero_grad(set_to_none=True)
+    loss2 = compute_loss()
+    scaler.scale(loss2).backward()
+    inv = 1.0 / scaler.get_scale()
+    finite = True
+    with torch.no_grad():
+        for p, e in zip(params, eps):
+            p.sub_(e)
+            if p.grad is not None:
+                p.grad.mul_(inv)
+                finite = finite and bool(torch.isfinite(p.grad).all())
+    if finite:
+        scaler.step(optimizer)
+        scaler.update()
+    else:
+        optimizer.zero_grad(set_to_none=True)
+        scaler.update(scaler.get_scale() * 0.5)
+
+
+def elr_reg(logits, targets_ema, idx, beta):
+    """Binary early-learning regularisation term; updates the running
+    per-sample prediction targets in place."""
+    p = torch.sigmoid(logits.float())
+    with torch.no_grad():
+        targets_ema[idx] = beta * targets_ema[idx] + (1 - beta) * p.detach()
+    t = targets_ema[idx]
+    agree = p * t + (1 - p) * (1 - t)
+    return torch.log((1 - agree).clamp_min(1e-4))
+
+
 def mix_batch(images, targets, mode, alpha):
     """Mixup or CutMix on one batch; targets are mixed by the same ratio
     (by pixel area for CutMix) so they stay in [0, 1]."""
@@ -229,7 +285,7 @@ def mix_batch(images, targets, mode, alpha):
 def evaluate(model, loader, device):
     model.eval()
     all_targets, all_probs = [], []
-    for images, targets in loader:
+    for images, targets, _ in loader:
         images = images.to(device, memory_format=torch.channels_last)
         logits = model(images).squeeze(1)
         probs = torch.sigmoid(logits).cpu().numpy()
@@ -277,7 +333,32 @@ def main():
     parser.add_argument("--train_frac", type=float, default=1.0,
                          help="train on this label-stratified fraction of the train rows "
                               "only (val untouched); used for the data-scaling check")
+    parser.add_argument("--sam", default="none", choices=["none", "sam"])
+    parser.add_argument("--sam_rho", type=float, default=0.05)
+    parser.add_argument("--loss", default="bce", choices=["bce", "elr"])
+    parser.add_argument("--elr_lambda", type=float, default=3.0)
+    parser.add_argument("--elr_beta", type=float, default=0.7)
+    parser.add_argument("--struct_drop", default="none", choices=["none", "gridmask", "facecut"],
+                         help="blank a facial region or a grid of cells in train images")
+    parser.add_argument("--struct_p", type=float, default=0.5)
+    parser.add_argument("--mosaic_p", type=float, default=0.0,
+                        help="probability of pixelating a train image into square blocks")
+    parser.add_argument("--mosaic_max", type=int, default=16,
+                        help="largest mosaic block size in px (smallest is 4)")
+    parser.add_argument("--all_data", action="store_true",
+                        help="train on the val rows too; val AUC in the log is then not held out")
+    parser.add_argument("--save_at", type=int, default=0,
+                        help="also write fixed.pt after this epoch (1-based), with no selection on val")
+    parser.add_argument("--heavy_p", type=float, default=0.0,
+                        help="probability of a strong blur or a very low resolution round trip")
+    parser.add_argument("--sbi_p", type=float, default=0.0,
+                        help="probability of turning a real train image into a self-blended "
+                             "pseudo-fake (label 1)")
     args = parser.parse_args()
+    if args.loss == "elr" and args.mix != "none":
+        parser.error("--loss elr cannot be combined with --mix")
+    if args.sam == "sam" and args.loss == "elr":
+        parser.error("--sam sam cannot be combined with --loss elr")
 
     set_seed(args.seed)
     os.makedirs(args.out_dir, exist_ok=True)
@@ -286,13 +367,17 @@ def main():
     use_amp = device.type == "cuda"
 
     rows = load_rows(args.split_csv)
-    train_rows = [r for r in rows if r["split"] == "train"]
+    train_rows = rows if args.all_data else [r for r in rows if r["split"] == "train"]
     if args.conflict == "drop":
         train_rows = [r for r in train_rows if r["is_conflict"] != "1"]
     train_rows = subsample(train_rows, args.subset_frac * args.train_frac, args.seed)
     val_rows = subsample([r for r in rows if r["split"] == "val"], args.subset_frac, args.seed)
 
-    train_ds = FaceDataset(train_rows, build_train_transform(args.aug_level, args.img_size))
+    train_ds = FaceDataset(train_rows, build_train_transform(args.aug_level, args.img_size,
+                                                         args.struct_drop, args.struct_p,
+                                                         args.mosaic_p, args.mosaic_max,
+                                                         args.heavy_p),
+                           sbi_p=args.sbi_p)
     val_ds = FaceDataset(val_rows, build_eval_transform(args.img_size), soft=False)
 
     train_loader = DataLoader(train_ds, batch_size=args.bs, shuffle=True,
@@ -326,6 +411,8 @@ def main():
         eps = args.label_smoothing
         return target * (1 - eps) + 0.5 * eps
 
+    elr_targets = torch.full((len(train_ds),), 0.5, device=device) if args.loss == "elr" else None
+
     log_path = os.path.join(args.out_dir, "log.csv")
     with open(log_path, "w", newline="", encoding="utf-8") as f:
         csv.writer(f).writerow(["epoch", "train_loss", "clean_val_auc", "robust_val_auc",
@@ -339,23 +426,32 @@ def main():
         epoch_start = time.time()
         running_loss = 0.0
         n_batches = 0
-        for images, targets in train_loader:
+        for images, targets, idx in train_loader:
             images = images.to(device, memory_format=torch.channels_last)
             targets = targets.to(device)
+            idx = idx.to(device)
             if args.mix != "none" and random.random() < args.mix_prob:
                 images, targets = mix_batch(images, targets, args.mix, args.mix_alpha)
             targets = smooth(targets)
 
             optimizer.zero_grad(set_to_none=True)
-            with torch.autocast(device_type=device.type, enabled=use_amp):
-                logits = model(images).squeeze(1)
-                per_sample = criterion(logits, targets)
-                if args.trim_frac > 0 and epoch >= args.trim_start:
-                    keep = max(1, int(round(per_sample.numel() * (1 - args.trim_frac))))
-                    per_sample = torch.topk(per_sample, keep, largest=False).values
-                loss = per_sample.mean()
 
-            if use_amp:
+            def compute_loss(update_elr=False):
+                with torch.autocast(device_type=device.type, enabled=use_amp):
+                    logits = model(images).squeeze(1)
+                    per_sample = criterion(logits, targets)
+                    if update_elr:
+                        per_sample = per_sample + args.elr_lambda * elr_reg(
+                            logits, elr_targets, idx, args.elr_beta)
+                    if args.trim_frac > 0 and epoch >= args.trim_start:
+                        keep = max(1, int(round(per_sample.numel() * (1 - args.trim_frac))))
+                        per_sample = torch.topk(per_sample, keep, largest=False).values
+                    return per_sample.mean()
+
+            loss = compute_loss(args.loss == "elr")
+            if args.sam == "sam":
+                sam_step(model, optimizer, scaler, compute_loss, loss, args.sam_rho)
+            elif use_amp:
                 scaler.scale(loss).backward()
                 scaler.step(optimizer)
                 scaler.update()
@@ -392,17 +488,20 @@ def main():
             csv.writer(f).writerow([epoch, train_loss, clean_auc, robust_auc,
                                      score, current_lr, epoch_seconds])
 
+        checkpoint = {
+            "arch": args.arch,
+            "state_dict": eval_model.state_dict(),
+            "img_size": args.img_size,
+            "epoch": epoch,
+            "clean_val_auc": clean_auc,
+            "robust_val_auc": robust_auc,
+            "score": score,
+        }
         if score > best_score:
             best_score = score
-            torch.save({
-                "arch": args.arch,
-                "state_dict": eval_model.state_dict(),
-                "img_size": args.img_size,
-                "epoch": epoch,
-                "clean_val_auc": clean_auc,
-                "robust_val_auc": robust_auc,
-                "score": score,
-            }, os.path.join(args.out_dir, "best.pt"))
+            torch.save(checkpoint, os.path.join(args.out_dir, "best.pt"))
+        if epoch + 1 == args.save_at:
+            torch.save(checkpoint, os.path.join(args.out_dir, "fixed.pt"))
 
     config = vars(args).copy()
     config["best_score"] = best_score

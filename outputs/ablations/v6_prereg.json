@@ -1,0 +1,254 @@
+{
+  "round": "v6",
+  "written": "2026-11-03, before the first v6 GPU job",
+  "data": "val fold 0 of data/splits/split_v1.csv (1408 images); default 23-variant suite for the rules, extended suite reported only",
+  "base_recipe": "python src/train.py --arch <arch> --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed <seed>",
+  "screen_rule": {
+    "reference_runs": {
+      "e_cnxt_small": [
+        0.9062,
+        0.8983
+      ],
+      "v2_cnxt_small_s7": [
+        0.9079,
+        0.9023
+      ],
+      "v2_cnxt_small_s123": [
+        0.9048,
+        0.8988
+      ],
+      "v3_cnxt_small_s11": [
+        0.9072,
+        0.9012
+      ]
+    },
+    "reference_values_are": "[clean AUC, worst-of-23 AUC] from outputs/eval/<run>.json",
+    "reference_mean": {
+      "clean": 0.906525,
+      "worst": 0.90015
+    },
+    "reference_min": {
+      "clean": 0.9048,
+      "worst": 0.8983
+    },
+    "adopt_if": [
+      "mean clean AUC over the 2 seeds >= reference mean clean + 0.003 (>= 0.909525)",
+      "mean worst-of-23 AUC over the 2 seeds >= reference mean worst + 0.003 (>= 0.90315)",
+      "no seed below the reference minimum on clean or worst"
+    ],
+    "backbones": "S2 archs are adopted per arch under the same rule; the final members are the best adopted CNN and the best adopted transformer by mean of (clean + worst)/2, falling back to convnext_small and swin_t"
+  },
+  "switch_rule": {
+    "reference": "shipped = final_resnet50 + e_cnxt_small + final_swin_t, equal-weight mean_logit, views orig+flip",
+    "candidate": "final design simulated on fold 0: 4 inner-fold models per member (trained on folds 1-4 via split_v1_h0_v{j}), equal-weight mean_logit",
+    "bootstrap": "paired, 1000 reps over val images, seed 0",
+    "pass_if": [
+      "clean AUC point gain > 0",
+      "worst-of-23 AUC point gain > 0",
+      "95% CI lower bound > -0.002 for both gains",
+      "T4 estimate for 3000 images < 200 s, confirmed on a Kaggle T4 (hard cap 240 s)"
+    ],
+    "fallback": "shipped trio + inner-fold members, scored once under the same rule; if it also fails, ship unchanged and report v6 as a negative result"
+  },
+  "experiments": [
+    {
+      "id": "S0",
+      "idea": "inner-fold baseline: ConvNeXt-S recipe on folds 1-4 with fold 0 held out; gives out-of-fold probabilities for S3 and members for the step-5 simulation",
+      "runs": [
+        "v6_s0_cnxt_s_v1",
+        "v6_s0_cnxt_s_v2",
+        "v6_s0_cnxt_s_v3",
+        "v6_s0_cnxt_s_v4"
+      ],
+      "seeds": [
+        42
+      ],
+      "commands": [
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1_h0_v1.csv --out_dir outputs/runs/v6_s0_cnxt_s_v1",
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1_h0_v2.csv --out_dir outputs/runs/v6_s0_cnxt_s_v2",
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1_h0_v3.csv --out_dir outputs/runs/v6_s0_cnxt_s_v3",
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1_h0_v4.csv --out_dir outputs/runs/v6_s0_cnxt_s_v4"
+      ],
+      "scored_by_screen_rule": false
+    },
+    {
+      "id": "S1",
+      "idea": "Self-Blended Images pseudo-fakes, p=0.3",
+      "runs": [
+        "v6_cnxt_s_sbi_s42",
+        "v6_cnxt_s_sbi_s7"
+      ],
+      "seeds": [
+        42,
+        7
+      ],
+      "commands": [
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1.csv --sbi_p 0.3 --out_dir outputs/runs/v6_cnxt_s_sbi_s42",
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 7 --split_csv data/splits/split_v1.csv --sbi_p 0.3 --out_dir outputs/runs/v6_cnxt_s_sbi_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s_sbi_s42/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_cnxt_s_sbi_s42",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s_sbi_s42/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_cnxt_s_sbi_s42_ext",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s_sbi_s7/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_cnxt_s_sbi_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s_sbi_s7/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_cnxt_s_sbi_s7_ext"
+      ],
+      "scored_by_screen_rule": true
+    },
+    {
+      "id": "S2a",
+      "idea": "ImageNet-22k ConvNeXt-S (timm convnext_small.fb_in22k_ft_in1k)",
+      "runs": [
+        "v6_cnxt_s22k_s42",
+        "v6_cnxt_s22k_s7"
+      ],
+      "seeds": [
+        42,
+        7
+      ],
+      "commands": [
+        "python src/train.py --arch convnext_small_22k --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1.csv --out_dir outputs/runs/v6_cnxt_s22k_s42",
+        "python src/train.py --arch convnext_small_22k --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 7 --split_csv data/splits/split_v1.csv --out_dir outputs/runs/v6_cnxt_s22k_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s22k_s42/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_cnxt_s22k_s42",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s22k_s42/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_cnxt_s22k_s42_ext",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s22k_s7/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_cnxt_s22k_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s22k_s7/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_cnxt_s22k_s7_ext"
+      ],
+      "scored_by_screen_rule": true
+    },
+    {
+      "id": "S2b",
+      "idea": "ImageNet-22k Swin-S (timm swin_small_patch4_window7_224.ms_in22k_ft_in1k)",
+      "runs": [
+        "v6_swin_s22k_s42",
+        "v6_swin_s22k_s7"
+      ],
+      "seeds": [
+        42,
+        7
+      ],
+      "commands": [
+        "python src/train.py --arch swin_small_22k --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1.csv --out_dir outputs/runs/v6_swin_s22k_s42",
+        "python src/train.py --arch swin_small_22k --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 7 --split_csv data/splits/split_v1.csv --out_dir outputs/runs/v6_swin_s22k_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_swin_s22k_s42/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_swin_s22k_s42",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_swin_s22k_s42/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_swin_s22k_s42_ext",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_swin_s22k_s7/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_swin_s22k_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_swin_s22k_s7/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_swin_s22k_s7_ext"
+      ],
+      "scored_by_screen_rule": true
+    },
+    {
+      "id": "S2c",
+      "idea": "ImageNet-21k EfficientNetV2-S (timm tf_efficientnetv2_s.in21k_ft_in1k)",
+      "runs": [
+        "v6_effv2s21k_s42",
+        "v6_effv2s21k_s7"
+      ],
+      "seeds": [
+        42,
+        7
+      ],
+      "commands": [
+        "python src/train.py --arch effv2s_21k --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1.csv --out_dir outputs/runs/v6_effv2s21k_s42",
+        "python src/train.py --arch effv2s_21k --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 7 --split_csv data/splits/split_v1.csv --out_dir outputs/runs/v6_effv2s21k_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_effv2s21k_s42/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_effv2s21k_s42",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_effv2s21k_s42/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_effv2s21k_s42_ext",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_effv2s21k_s7/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_effv2s21k_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_effv2s21k_s7/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_effv2s21k_s7_ext"
+      ],
+      "scored_by_screen_rule": true
+    },
+    {
+      "id": "S3",
+      "idea": "confident-learning label cleaning from S0 out-of-fold probabilities; flagged train rows dropped, fold 0 labels untouched",
+      "runs": [
+        "v6_cnxt_s_clean_s42",
+        "v6_cnxt_s_clean_s7"
+      ],
+      "seeds": [
+        42,
+        7
+      ],
+      "commands": [
+        "python src/clean_labels.py --runs outputs/runs/v6_s0_cnxt_s_v1 outputs/runs/v6_s0_cnxt_s_v2 outputs/runs/v6_s0_cnxt_s_v3 outputs/runs/v6_s0_cnxt_s_v4 --base_split data/splits/split_v1.csv --out_split data/splits/split_v1_clean.csv --out_prefix outputs/ablations/v6_clean",
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1_clean.csv --out_dir outputs/runs/v6_cnxt_s_clean_s42",
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 7 --split_csv data/splits/split_v1_clean.csv --out_dir outputs/runs/v6_cnxt_s_clean_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s_clean_s42/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_cnxt_s_clean_s42",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s_clean_s42/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_cnxt_s_clean_s42_ext",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s_clean_s7/best.pt --split_csv data/splits/split_v1.csv --out outputs/eval/v6_cnxt_s_clean_s7",
+        "python src/robust_eval.py --ckpt outputs/runs/v6_cnxt_s_clean_s7/best.pt --split_csv data/splits/split_v1.csv --suite extended --out outputs/eval/v6_cnxt_s_clean_s7_ext"
+      ],
+      "scored_by_screen_rule": true
+    }
+  ],
+  "rerun_policy": "rerun only for a crash, OOM or a run that did not learn (val AUC < 0.75 after 4 epochs); logged as such. No hyperparameter retuning after seeing val. Each candidate is scored once.",
+  "never": [
+    "test images in any statistic or training",
+    "val labels changed for scoring",
+    "runtime downloads at inference",
+    "code, weights or predictions from outside this repository"
+  ],
+  "cutoff": {
+    "last_new_training_job_start": "2026-11-11T23:59+05:30",
+    "freeze": "2026-11-14 evening"
+  },
+  "results": {
+    "date": "2026-11-04",
+    "screen_two_seed_mean_clean_worst": {
+      "label_cleaning": [
+        0.906,
+        0.9011
+      ],
+      "swin_s_22k": [
+        0.9041,
+        0.8967
+      ],
+      "convnext_s_22k": [
+        0.9023,
+        0.8925
+      ],
+      "sbi": [
+        0.9001,
+        0.8933
+      ],
+      "effv2s_21k": [
+        0.8996,
+        0.8876
+      ]
+    },
+    "screen_decision": "no lever passes",
+    "final_design": {
+      "source": "outputs/ablations/ens_v6_pool_pool.json",
+      "clean": 0.9036,
+      "mean": 0.9025,
+      "worst": 0.8996,
+      "gain_clean": -0.0029,
+      "clean_ci95": [
+        -0.0072,
+        0.0013
+      ],
+      "gain_worst": -0.0021,
+      "worst_ci95": [
+        -0.007,
+        0.0023
+      ],
+      "t4_est_s": 113.9,
+      "rule": "fail"
+    },
+    "fallback": {
+      "source": "outputs/ablations/ens_v6_fb_pool.json",
+      "clean": 0.905,
+      "mean": 0.904,
+      "worst": 0.9016,
+      "gain_clean": -0.0014,
+      "clean_ci95": [
+        -0.0046,
+        0.0018
+      ],
+      "gain_worst": -0.0,
+      "worst_ci95": [
+        -0.0043,
+        0.0031
+      ],
+      "rule": "fail"
+    },
+    "decision": "ship unchanged; full 5-fold training not run"
+  }
+}

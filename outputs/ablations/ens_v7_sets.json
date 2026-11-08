@@ -1,0 +1,18 @@
+{
+  "shipped": [
+    "final_resnet50",
+    "e_cnxt_small",
+    "final_swin_t"
+  ],
+  "v7_mosaic": {
+    "members": [
+      "v7_resnet50",
+      "v7_cnxt_small",
+      "v7_swin_t"
+    ],
+    "views": [
+      "orig",
+      "flip"
+    ]
+  }
+}

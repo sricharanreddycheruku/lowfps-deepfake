@@ -73,7 +73,7 @@ class GradCAM:
 
     def _to_map(self, tensor):
         # Swin-T keeps channels last: (N, H, W, C) -> (N, C, H, W)
-        return tensor.permute(0, 3, 1, 2) if self.arch == "swin_t" else tensor
+        return tensor.permute(0, 3, 1, 2) if self.arch in ("swin_t", "swin_s", "swin_v2_t", "swin_small_22k") else tensor
 
     def _on_forward(self, module, inputs, output):
         self.activation = self._to_map(output)

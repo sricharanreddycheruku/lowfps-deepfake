@@ -1,0 +1,66 @@
+{
+  "rule": "mean_logit",
+  "fusion_arg": "mean_logit",
+  "views_default": [
+    "orig",
+    "flip"
+  ],
+  "rule_choice_set": null,
+  "rule_mean_auc": null,
+  "reps": 1000,
+  "seed": 0,
+  "sets": {
+    "shipped": {
+      "members": [
+        "final_resnet50",
+        "e_cnxt_small",
+        "final_swin_t"
+      ],
+      "weights": null,
+      "views": [
+        "orig",
+        "flip"
+      ],
+      "clean_auc": 0.9065,
+      "mean_auc": 0.9055,
+      "worst_auc": 0.9016,
+      "std_auc": 0.0015,
+      "t4_est_s": null
+    },
+    "v6_fallback": {
+      "members": [
+        "final_resnet50",
+        "e_cnxt_small",
+        "final_swin_t",
+        "v6_s0_cnxt_s_v1",
+        "v6_s0_cnxt_s_v2",
+        "v6_s0_cnxt_s_v3",
+        "v6_s0_cnxt_s_v4",
+        "v6_s0_swin_t_v1",
+        "v6_s0_swin_t_v2",
+        "v6_s0_swin_t_v3",
+        "v6_s0_swin_t_v4"
+      ],
+      "weights": null,
+      "views": [
+        "orig"
+      ],
+      "clean_auc": 0.905,
+      "mean_auc": 0.904,
+      "worst_auc": 0.9016,
+      "std_auc": 0.0013,
+      "t4_est_s": null,
+      "gain_clean": -0.0014,
+      "gain_worst": -0.0,
+      "clean_ci95": [
+        -0.0046,
+        0.0018
+      ],
+      "worst_ci95": [
+        -0.0043,
+        0.0031
+      ],
+      "t4_est_ratio_vs_ref": null
+    }
+  }
+}

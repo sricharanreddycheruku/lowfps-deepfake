@@ -1,0 +1,39 @@
+{
+"round": "v8",
+"written": "2026-11-04, before any v8 job",
+"reason": "The v7 bundle lifted pixelate8 AUC from 0.7229 to 0.8322, which is still the weakest known variant. p=0.15 was fixed in advance in v7 and never varied, and one seed per member leaves the size of seed noise on pixelate8 unknown.",
+"reference": "v7 bundle: v7_resnet50 + v7_cnxt_small + v7_swin_t, equal mean_logit, orig+flip",
+"recipe": "exactly the v7 recipe per member (12 epochs, EMA 0.99, backbone_lr_mult 1.0, label smoothing 0.05, aug strong, conflict drop, bs 64, lr 1e-3 resnet50, 3e-4 convnext_small and swin_t). Only --mosaic_p and --seed change.",
+"trios": {
+"p30_s42": "mosaic_p 0.3, seed 42",
+"p50_s42": "mosaic_p 0.5, seed 42",
+"p15_s7": "mosaic_p 0.15, seed 7",
+"p15_s123": "mosaic_p 0.15, seed 123",
+"p30_s7": "mosaic_p 0.3, seed 7"
+},
+"candidates": {
+"p30": "trio p30_s42",
+"p50": "trio p50_s42",
+"seeds6": "v7 trio + trio p15_s7, six members",
+"p30x2": "trios p30_s42 + p30_s7, six members"
+},
+"noise_reference": "pixelate8 of the three p=0.15 trios (v7, p15_s7, p15_s123), three members fused by robust_eval. These two extra trios are not candidates alone.",
+"switch_rule": {
+"common_required": [
+"clean AUC point gain >= -0.002 and 95% CI lower bound > -0.006 vs v7 (default suite, ensemble_pool, paired bootstrap 1000, seed 0)",
+"worst-of-23 AUC point gain >= -0.002 and 95% CI lower bound > -0.006 (same)",
+"no extended variant other than clean and pixelate8 falls by more than 0.005 vs v7",
+"T4 estimate under 200 s, confirmed on a T4 before shipping"
+],
+"route_a_pixelate": "pixelate8 gain >= +0.02 vs v7 and pixelate8 above the best of the three p=0.15 trios",
+"route_b_general": "clean and worst-of-23 point gains both >= +0.004 with both 95% CI lower bounds > 0",
+"pass": "all common checks and at least one route",
+"several_pass": "take the highest mean AUC over the default-suite and extended-suite variants",
+"none_pass": "keep the v7 bundle"
+},
+"stress_suite": "robust_eval --suite stress on the reference and each trio: reporting only, not part of the rule. pixelate12 and pixelate5 lie inside the trained block range, pixelate24 outside it.",
+"limits": "pixelate8 lies inside the trained block-size range. Four candidates on one validation fold, so the winner's gain is optimistic.",
+"rerun_policy": "rerun only for a crash, OOM or a run that did not learn. Candidates are scored once.",
+"never": "test images in any statistic or training",
+"results": null
+}

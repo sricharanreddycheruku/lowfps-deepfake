@@ -4,8 +4,8 @@ fused by averaging probabilities).
 This supersedes the fast 3-variant proxy baked into src/train.py (that
 proxy stays for per-epoch checkpoint selection, since this full suite is
 too slow to run every epoch). Use this script for the real robustness
-numbers: baseline comparisons (Chunk 4.2), ablations (Chunk 5), and the
-final ensemble (Chunk 6).
+numbers: baseline comparisons, ablations and the
+final ensemble.
 
 Variant suite (deterministic, fixed parameters, no random draws other than
 a per-image seed for the noise variants so repeated runs match exactly):
@@ -15,7 +15,12 @@ contrast 0.6/1.4; grayscale; centre crop 90% + resize; rotation 5 deg;
 horizontal flip; resize to 160 and 299 then back to 224; a combo variant
 (JPEG 50 + blur 1 + noise 5).
 
-Per variant: AUC, F1 and accuracy at --threshold (default 0.5; Chunk 4.3
+--suite extended runs a second, separate set modelled on the corruptions
+seen in the training images themselves: snow, rain streaks, black boxes,
+coloured block dropout, pixelation, colour tint and JPEG q20 (plus clean).
+It is reported on its own so the default 23-variant numbers stay comparable.
+
+Per variant: AUC, F1 and accuracy at --threshold (default 0.5; src/threshold.py
 picks the final threshold), and mean predicted confidence per class.
 Summary row: clean AUC, mean AUC across all variants, worst-variant AUC,
 std of AUC across variants.
@@ -25,7 +30,7 @@ Usage:
         --split_csv data/splits/split_v1.csv --out outputs/eval/smoke_efficientnet_b0
 
 Multiple --ckpt values are fused by averaging per-image probabilities
-(a simple placeholder fusion; Chunk 6 ablates fusion rules properly).
+(a simple fusion; src/ensemble.py compares fusion rules).
 """
 
 import argparse
@@ -36,7 +41,7 @@ import os
 
 import numpy as np
 import torch
-from PIL import Image, ImageEnhance, ImageFilter
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 from sklearn.metrics import f1_score, roc_auc_score
 from torch.utils.data import DataLoader, Dataset
 
@@ -124,6 +129,125 @@ def _combo(img, idx):
 
 def _clean(img, idx):
     return img
+
+
+def _rng(idx, salt):
+    return np.random.RandomState(idx * 10007 + salt)
+
+
+def _snow(img, idx):
+    rng = _rng(idx, 11)
+    w, h = img.size
+    layer = Image.new("L", (w, h), 0)
+    draw = ImageDraw.Draw(layer)
+    for _ in range(300):
+        x, y, r = rng.uniform(0, w), rng.uniform(0, h), rng.uniform(0.8, 2.5)
+        draw.ellipse((x - r, y - r, x + r, y + r), fill=int(rng.uniform(180, 255)))
+    layer = layer.filter(ImageFilter.GaussianBlur(radius=0.6))
+    return Image.composite(Image.new("RGB", (w, h), (255, 255, 255)), img, layer)
+
+
+def _rain(img, idx):
+    rng = _rng(idx, 12)
+    w, h = img.size
+    layer = Image.new("L", (w, h), 0)
+    draw = ImageDraw.Draw(layer)
+    dx = rng.uniform(-0.3, 0.3)
+    for _ in range(120):
+        x, y, length = rng.uniform(0, w), rng.uniform(0, h), rng.uniform(10, 25)
+        draw.line((x, y, x + dx * length, y + length), fill=150, width=1)
+    layer = layer.filter(ImageFilter.GaussianBlur(radius=0.5))
+    return Image.composite(Image.new("RGB", (w, h), (220, 220, 220)), img, layer)
+
+
+def _black_boxes(img, idx):
+    rng = _rng(idx, 13)
+    w, h = img.size
+    img = img.copy()
+    draw = ImageDraw.Draw(img)
+    for _ in range(3):
+        bw, bh = rng.uniform(0.12, 0.25) * w, rng.uniform(0.12, 0.25) * h
+        x, y = rng.uniform(0, w - bw), rng.uniform(0, h - bh)
+        draw.rectangle((x, y, x + bw, y + bh), fill=(0, 0, 0))
+    return img
+
+
+def _block_dropout(img, idx, block=16, p=0.1):
+    rng = _rng(idx, 14)
+    w, h = img.size
+    img = img.copy()
+    draw = ImageDraw.Draw(img)
+    for y in range(0, h, block):
+        for x in range(0, w, block):
+            if rng.rand() < p:
+                colour = tuple(int(c) for c in rng.randint(0, 256, size=3))
+                draw.rectangle((x, y, x + block - 1, y + block - 1), fill=colour)
+    return img
+
+
+def _pixelate(factor):
+    def apply(img, idx):
+        w, h = img.size
+        small = img.resize((max(1, w // factor), max(1, h // factor)), Image.NEAREST)
+        return small.resize((w, h), Image.NEAREST)
+    return apply
+
+
+def _colour_tint(img, idx):
+    rng = _rng(idx, 15)
+    tint = Image.new("RGB", img.size, tuple(int(c) for c in rng.randint(0, 256, size=3)))
+    return Image.blend(img, tint, 0.3)
+
+
+EXTENDED_VARIANTS = {
+    "clean": _clean,
+    "snow": _snow,
+    "rain": _rain,
+    "black_boxes": _black_boxes,
+    "block_dropout": _block_dropout,
+    "pixelate8": _pixelate(8),
+    "colour_tint": _colour_tint,
+    "jpeg_q20": _jpeg(20),
+}
+
+
+def _pixelate_patch(block):
+    def apply(img, idx):
+        rng = _rng(idx, 16)
+        w, h = img.size
+        pw, ph = w // 2, h // 2
+        left, top = int(rng.randint(0, w - pw + 1)), int(rng.randint(0, h - ph + 1))
+        box = (left, top, left + pw, top + ph)
+        out = img.copy()
+        out.paste(_pixelate(block)(img.crop(box), idx), box)
+        return out
+    return apply
+
+
+def _heavy_combo(img, idx):
+    img = _jpeg(30)(img, idx)
+    img = _blur(2.0)(img, idx)
+    img = _noise(10, salt=998)(img, idx)
+    return img
+
+
+def _pixelate_jpeg(img, idx):
+    return _jpeg(50)(_pixelate(8)(img, idx), idx)
+
+
+STRESS_VARIANTS = {
+    "clean": _clean,
+    "pixelate5": _pixelate(5),
+    "pixelate12": _pixelate(12),
+    "pixelate24": _pixelate(24),
+    "pixelate8_patch": _pixelate_patch(8),
+    "pixelate8_jpeg50": _pixelate_jpeg,
+    "downscale_0.125": _downscale_upscale(0.125),
+    "jpeg_q10": _jpeg(10),
+    "blur_sigma4": _blur(4.0),
+    "noise_std40": _noise(40, salt=4),
+    "heavy_combo": _heavy_combo,
+}
 
 
 VARIANTS = {
@@ -229,9 +353,9 @@ def compute_metrics(targets, probs, threshold):
     }
 
 
-def run_suite(models_list, rows, device, bs, num_workers, threshold, size=224):
+def run_suite(models_list, rows, device, bs, num_workers, threshold, size=224, variants=None):
     rows_out = []
-    for name, variant_fn in VARIANTS.items():
+    for name, variant_fn in (variants or VARIANTS).items():
         targets, probs = predict_variant(models_list, rows, variant_fn, device, bs, num_workers, size)
         metrics = compute_metrics(targets, probs, threshold)
         rows_out.append({"variant": name, **metrics})
@@ -282,13 +406,18 @@ def main():
     parser.add_argument("--bs", type=int, default=64)
     parser.add_argument("--num_workers", type=int, default=4)
     parser.add_argument("--threshold", type=float, default=0.5)
+    parser.add_argument("--suite", default="default", choices=["default", "extended", "stress"],
+                        help="default: the 23 standard variants; extended: corruptions seen in the data; "
+                             "stress: harsher settings, not used in training")
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     rows = load_rows(args.split_csv, split="val")
     models_list, size = load_models(args.ckpt, device)
 
-    rows_out, summary = run_suite(models_list, rows, device, args.bs, args.num_workers, args.threshold, size)
+    variants = {"default": VARIANTS, "extended": EXTENDED_VARIANTS, "stress": STRESS_VARIANTS}[args.suite]
+    rows_out, summary = run_suite(models_list, rows, device, args.bs, args.num_workers,
+                                  args.threshold, size, variants)
     write_outputs(rows_out, summary, args.out)
 
 

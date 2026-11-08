@@ -1,0 +1,52 @@
+{
+  "round": "v12",
+  "written": "2026-11-05, before any v12 job and before the v10 and v11 results",
+  "reason": "Every round so far was judged on val fold 0, so the v8 and v10 winners may be partly fitted to that fold. Folds 1 to 4 are untouched by any selection.",
+  "recipes": {
+    "A": "v7 recipe: mosaic_p 0.15, heavy_p 0",
+    "B": "the recipe in outputs/ablations/v11_recipe.json: mosaic_p 0.5, heavy_p from the v10 outcome"
+  },
+  "design": "ResNet-50 + ConvNeXt-S + Swin-T per recipe, fixed stop (12, 9, 12), no selection on val, trained on split_v1_fold{1..4}, fused mean probability on the orig view by robust_eval on that fold's val, default + extended + stress suites. Seed 42 for all folds, then seeds 7, 123, 11, 2026, 99, 5, 17, 31 and 8 while time remains (seed list extended before any v12 job so the GPU stays in use until the deadline).",
+  "stop": "no new job after the deadline in gpu_deadline.txt. All complete fold and seed pairs are used; nothing is rerun to change a result.",
+  "rule": {
+    "metric": "paired B minus A over complete fold and seed pairs: clean, worst-of-23, pixelate8, stress mean",
+    "keep_B": "mean clean gain >= -0.003 and mean pixelate8 gain > 0",
+    "otherwise": "refit recipe A on all labelled rows, same seeds and fixed stop, and ship that instead of the v11 bundle"
+  },
+  "reporting": "the mean over folds of recipe B is the cross-validated estimate quoted in the report, next to fold 0.",
+  "limits": "Fixed-stop models trained on 80% of the data, so the estimate is for that size, not for the refit. Fold 0 is excluded from the comparison because it took part in selection.",
+  "never": "test images in any statistic or training",
+  "results": {
+    "status": "final: folds 1-3 seed 42 scored for both recipes; fold 4 recipe A scored, recipe B trained but not scored; stopped at the deadline (8 Nov 15:30), no further seeds",
+    "mean_A": {
+      "clean": 0.9073,
+      "mean": 0.9063,
+      "worst": 0.8989,
+      "pixelate8": 0.8342,
+      "stress_mean": 0.8429
+    },
+    "mean_B": {
+      "clean": 0.9079,
+      "mean": 0.9062,
+      "worst": 0.8976,
+      "pixelate8": 0.8476,
+      "stress_mean": 0.8495
+    },
+    "mean_gain_B_minus_A": {
+      "clean": 0.0005,
+      "mean": -0.0001,
+      "worst": -0.0013,
+      "pixelate8": 0.0133,
+      "stress_mean": 0.0066
+    },
+    "sd_gain": {
+      "clean": 0.0013,
+      "mean": 0.0009,
+      "worst": 0.0019,
+      "pixelate8": 0.006,
+      "stress_mean": 0.0022
+    },
+    "keep_B": true,
+    "n_pairs": 3
+  }
+}

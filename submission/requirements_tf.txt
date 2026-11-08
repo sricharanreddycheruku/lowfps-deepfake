@@ -4,4 +4,4 @@ numpy==1.26.4
 pillow==12.3.0
 # Only needed to re-run src/export_tf.py (PyTorch -> ONNX -> SavedModel):
 #   torch, torchvision, onnx==1.16.1, onnx2tf==1.28.8, onnxruntime,
-#   onnx_graphsurgeon, sng4onnx, onnxsim, tf_keras==2.17.0
+#   onnx_graphsurgeon, sng4onnx, onnxsim, tf_keras==2.17.0, ai-edge-litert, scikit-learn

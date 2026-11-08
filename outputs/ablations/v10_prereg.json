@@ -1,0 +1,66 @@
+{
+  "round": "v10",
+  "written": "2026-11-05, before any v10 job and after the v8 and v9 decisions",
+  "reason": "v8 p50 is the only passer of v8 and v9. It rests on one seed and is behind the heavy-augmentation sets on blur_sigma4 (0.8577 vs 0.8860) and downscale_0.125 (0.8374 vs 0.8646). Mosaic p 0.5 and heavy augmentation have not been tried together.",
+  "reference": "v8 bundle: v8_p50_s42_resnet50 + v8_p50_s42_cnxt_small + v8_p50_s42_swin_t, equal mean_logit, orig+flip",
+  "recipe": "exactly the v8 recipe per member with mosaic_p 0.5 and mosaic_max 16. Only --heavy_p and --seed change.",
+  "trios": {
+    "p50_s7": "heavy_p 0, seed 7",
+    "ph_s42": "heavy_p 0.15, seed 42",
+    "ph30_s42": "heavy_p 0.3, seed 42",
+    "ph_s7": "heavy_p 0.15, seed 7",
+    "ph30_s7": "heavy_p 0.3, seed 7"
+  },
+  "candidates": {
+    "p50x2": "v8 p50_s42 + p50_s7, six members",
+    "ph": "ph_s42",
+    "ph30": "ph30_s42",
+    "phx2": "ph_s42 + ph_s7",
+    "ph30x2": "ph30_s42 + ph30_s7"
+  },
+  "noise_reference": "p50_s7 alone is not a candidate. Its pixelate8 and stress mean give the seed spread of the p50 recipe and are reported beside the reference.",
+  "switch_rule": {
+    "common_required": "the four common checks of v8_prereg.json, against the v8 bundle",
+    "route_b_general": "as in v8, against the v8 bundle",
+    "route_d_stress": "mean AUC over the stress variants except clean gains >= +0.01 vs the v8 bundle, and pixelate8 falls by no more than 0.005",
+    "pass": "all common checks and at least one route",
+    "several_pass": "take the highest mean AUC over the default, extended and stress variants",
+    "none_pass": "keep the v8 bundle"
+  },
+  "limits": "Designed after seeing v8 and v9 results on the same validation fold, and the stress rows it targets are inside the trained ranges, so gains are optimistic. Five more candidates add to the comparisons already made on this fold.",
+  "rerun_policy": "rerun only for a crash, OOM or a run that did not learn. Candidates are scored once.",
+  "never": "test images in any statistic or training",
+  "results": {
+    "outcome": "no passer",
+    "p50x2": {
+      "pass": false,
+      "clean": 0.9075,
+      "mean": 0.9059,
+      "worst": 0.901,
+      "gain_clean": 0.0004,
+      "gain_worst": 0.0009,
+      "pixelate8": 0.8543,
+      "stress_mean": 0.8544,
+      "t4_est_s": 143.5
+    },
+    "ph": {
+      "pass": false,
+      "clean": 0.9013,
+      "gain_clean": -0.0057,
+      "pixelate8": 0.8499
+    },
+    "ph30": {
+      "pass": false,
+      "pixelate8": 0.8422
+    },
+    "p50_s7_spread": {
+      "pixelate8": 0.8471,
+      "stress_mean": 0.8493
+    },
+    "reference": {
+      "pixelate8": 0.8562,
+      "stress_mean": 0.8543
+    },
+    "note": "phx2 and ph30x2 also failed (see v10_decision.json on the host)"
+  }
+}

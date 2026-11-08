@@ -1,4 +1,4 @@
-"""Bar chart comparing per-variant AUC for the two Chunk 4.2 baseline runs
+"""Bar chart comparing per-variant AUC for the two baseline runs
 (aug_level none vs strong on EfficientNet-B0).
 
 Usage:

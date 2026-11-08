@@ -1,0 +1,37 @@
+{
+  "best": {
+    "variant": "summary",
+    "clean_auc": 0.9058887866460028,
+    "mean_auc": 0.9047364484892384,
+    "worst_auc": 0.8988481531706057,
+    "std_auc": 0.0017368938236980254
+  },
+  "fixed": {
+    "variant": "summary",
+    "clean_auc": 0.9053156883636835,
+    "mean_auc": 0.9040645583107323,
+    "worst_auc": 0.8977766208188039,
+    "std_auc": 0.0018354132249670514
+  },
+  "gain_clean": -0.0005730982823193287,
+  "gain_worst": -0.001071532351801796,
+  "ext_gain": {
+    "snow": -0.0004,
+    "rain": -0.0008,
+    "black_boxes": -0.0004,
+    "block_dropout": 0.0001,
+    "pixelate8": -0.0018,
+    "colour_tint": -0.0001,
+    "jpeg_q20": -0.0008
+  },
+  "gate_fixed": true,
+  "loss_diff": {
+    "s42_resnet50": -0.0014,
+    "s42_cnxt_small": -0.0102,
+    "s42_swin_t": -0.0086,
+    "s7_resnet50": 0.003,
+    "s7_cnxt_small": -0.0001,
+    "s7_swin_t": -0.0112
+  },
+  "gate_loss": true
+}

@@ -1,8 +1,9 @@
 """Inference script for the Deepfake ML Hackathon submission.
 
-Loads the bundled ensemble (ResNet-50, ConvNeXt-Small, Swin-T), runs every
-image in --test_dir through all members with a horizontal-flip TTA, fuses the
-logits as stored in the bundle and writes image_id,label,confidence.
+Loads the bundled ensemble (six members: ResNet-50, ConvNeXt-Small and Swin-T,
+two seeds each), runs every image in --test_dir through all members with a
+horizontal-flip TTA, fuses the logits as stored in the bundle and writes
+image_id,label,confidence.
 
     python inference_script.py \
         --test_dir ./test/images/ \

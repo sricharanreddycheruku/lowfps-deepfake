@@ -1,0 +1,22 @@
+{
+ "shipped": [
+  "final_resnet50",
+  "e_cnxt_small",
+  "final_swin_t"
+ ],
+ "v6_design": {
+  "members": [
+   "v6_s0_cnxt_s_v1",
+   "v6_s0_cnxt_s_v2",
+   "v6_s0_cnxt_s_v3",
+   "v6_s0_cnxt_s_v4",
+   "v6_s0_swin_t_v1",
+   "v6_s0_swin_t_v2",
+   "v6_s0_swin_t_v3",
+   "v6_s0_swin_t_v4"
+  ],
+  "views": [
+   "orig"
+  ]
+ }
+}

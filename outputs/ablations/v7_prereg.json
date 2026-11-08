@@ -1,0 +1,26 @@
+{
+  "round": "v7",
+  "written": "2026-11-04, before any v7 job",
+  "reason": "The extended suite run on the shipped ensemble gave pixelate8 AUC 0.7229 against 0.8961 or better on every other extended variant (outputs/eval/shipped_ext.json). Training images contain injected mosaic-like corruption, and the existing down-scale augmentation stops at scale 0.25.",
+  "change": "one new augmentation: whole-image mosaic, p=0.15, integer block size 4 to 16, nearest-neighbour down and up, applied after the degradation block. Nothing else changes.",
+  "runs": [
+    "python src/train.py --arch resnet50 --lr 1e-3 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1.csv --mosaic_p 0.15 --out_dir outputs/runs/v7_resnet50",
+    "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1.csv --mosaic_p 0.15 --out_dir outputs/runs/v7_cnxt_small",
+    "python src/train.py --arch swin_t --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --split_csv data/splits/split_v1.csv --mosaic_p 0.15 --out_dir outputs/runs/v7_swin_t"
+  ],
+  "candidate": "v7_resnet50 + v7_cnxt_small + v7_swin_t, equal mean_logit, orig+flip, as shipped",
+  "switch_rule": {
+    "all_required": [
+      "pixelate8 AUC gain >= +0.05 (extended suite, three members fused by robust_eval, compared with outputs/eval/shipped_ext.json)",
+      "clean AUC point gain >= -0.002 and 95% CI lower bound > -0.006 (default suite, ensemble_pool, paired bootstrap 1000, seed 0)",
+      "worst-of-23 AUC point gain >= -0.002 and 95% CI lower bound > -0.006 (same)",
+      "no other extended variant falls by more than 0.005",
+      "T4 cold time stays under 200 s if the bundle is rebuilt (same architectures, so the shipped 93 s is expected)"
+    ],
+    "if_fail": "ship the current bundle and report pixelate8 as a known weakness"
+  },
+  "limits": "pixelate8 lies inside the trained block-size range, so that row becomes partly in-distribution. One seed per member.",
+  "rerun_policy": "rerun only for a crash, OOM or a run that did not learn. No retuning of p, block sizes or recipe. The candidate is scored once.",
+  "never": "test images in any statistic or training",
+  "results": null
+}

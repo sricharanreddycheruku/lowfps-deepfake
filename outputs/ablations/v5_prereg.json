@@ -1,0 +1,549 @@
+{
+  "round": "v5",
+  "decision_rule": {
+    "reference": "shipped = final_resnet50 + e_cnxt_small + final_swin_t, equal-weight mean_logit, views orig+flip, threshold 0.5",
+    "data": "val fold 0 of data/splits/split_v1.csv (1408 images), 23 robustness variants",
+    "bootstrap": "paired, 1000 reps over val images, seed 0",
+    "pass_if": [
+      "clean AUC gain >= 0.004",
+      "worst-of-23 AUC gain >= 0.004",
+      "95% CI lower bound > 0 for both gains",
+      "T4 time for 3000 images < 150 s (4060 Ti in-script time x 3.5, then confirmed on a Kaggle T4 before shipping)"
+    ],
+    "several_pass": "take the one with the largest worst-variant CI lower bound; the union of passers (E10) is scored once and taken only if it also passes and beats that one on both lower bounds",
+    "none_pass": "shipped bundle, predictions.csv and TF models stay untouched"
+  },
+  "fusion": {
+    "rule": "mean_logit, no rank fusion",
+    "add_on": "logit = 0.8*mean(shipped 3 member logits) + 0.2*new member logit, flip TTA on every member",
+    "swap": "equal weights 1/3 each"
+  },
+  "comparison_count": 10,
+  "cutoff": {
+    "last_new_training_job_start": "2026-11-11T23:59+05:30",
+    "decision_date": "2026-11-12",
+    "freeze": "2026-11-14 evening"
+  },
+  "rerun_policy": "rerun only for a crash, OOM or a run that did not learn (val AUC < 0.75 after 4 epochs); log it as such. No hyperparameter retuning after seeing val. Each candidate set is scored exactly once.",
+  "experiments": [
+    {
+      "id": "E1",
+      "idea": "fixed SRM noise-residual EfficientNet-B0 member",
+      "runs": [
+        "v5_srm_b0"
+      ],
+      "commands": [
+        "python src/train.py --arch srm_b0 --lr 1e-3 --epochs 12 --seed 42 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --out_dir outputs/runs/v5_srm_b0"
+      ],
+      "seeds": [
+        42
+      ],
+      "candidate_sets": {
+        "shipped_plus_srm_b0": {
+          "members": [
+            "final_resnet50",
+            "e_cnxt_small",
+            "final_swin_t",
+            "v5_srm_b0"
+          ],
+          "weights": [
+            0.2666666667,
+            0.2666666667,
+            0.2666666667,
+            0.2
+          ],
+          "note": "0.8*mean(shipped 3) + 0.2*new"
+        }
+      }
+    },
+    {
+      "id": "E2",
+      "idea": "JPEG-grid DCT-coefficient member",
+      "runs": [
+        "v5_dct_b0"
+      ],
+      "commands": [
+        "python src/train.py --arch dct_b0 --lr 1e-3 --epochs 12 --seed 42 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --out_dir outputs/runs/v5_dct_b0"
+      ],
+      "seeds": [
+        42
+      ],
+      "candidate_sets": {
+        "shipped_plus_dct_b0": {
+          "members": [
+            "final_resnet50",
+            "e_cnxt_small",
+            "final_swin_t",
+            "v5_dct_b0"
+          ],
+          "weights": [
+            0.2666666667,
+            0.2666666667,
+            0.2666666667,
+            0.2
+          ],
+          "note": "0.8*mean(shipped 3) + 0.2*new"
+        }
+      }
+    },
+    {
+      "id": "E3",
+      "idea": "SAM (rho 0.05) on ConvNeXt-Small",
+      "runs": [
+        "v5_cnxt_s_sam_s42",
+        "v5_cnxt_s_sam_s7"
+      ],
+      "commands": [
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --sam sam --sam_rho 0.05 --out_dir outputs/runs/v5_cnxt_s_sam_s42",
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 7 --sam sam --sam_rho 0.05 --out_dir outputs/runs/v5_cnxt_s_sam_s7"
+      ],
+      "seeds": [
+        42,
+        7
+      ],
+      "candidate_sets": {
+        "shipped_swap_sam": {
+          "members": [
+            "final_resnet50",
+            "v5_cnxt_s_sam_s42",
+            "final_swin_t"
+          ],
+          "weights": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ]
+        }
+      },
+      "supporting_not_decision": "seed 7 single-model delta vs v2_cnxt_small_s7"
+    },
+    {
+      "id": "E4",
+      "idea": "ELR (lambda 3.0, beta 0.7) on ConvNeXt-Small",
+      "runs": [
+        "v5_cnxt_s_elr_s42",
+        "v5_cnxt_s_elr_s7"
+      ],
+      "commands": [
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --loss elr --elr_lambda 3.0 --elr_beta 0.7 --out_dir outputs/runs/v5_cnxt_s_elr_s42",
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 7 --loss elr --elr_lambda 3.0 --elr_beta 0.7 --out_dir outputs/runs/v5_cnxt_s_elr_s7"
+      ],
+      "seeds": [
+        42,
+        7
+      ],
+      "candidate_sets": {
+        "shipped_swap_elr": {
+          "members": [
+            "final_resnet50",
+            "v5_cnxt_s_elr_s42",
+            "final_swin_t"
+          ],
+          "weights": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ]
+        }
+      },
+      "supporting_not_decision": "seed 7 single-model delta vs v2_cnxt_small_s7"
+    },
+    {
+      "id": "E5",
+      "idea": "facecut structured dropout on ConvNeXt-Small",
+      "runs": [
+        "v5_cnxt_s_facecut"
+      ],
+      "commands": [
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --struct_drop facecut --struct_p 0.5 --out_dir outputs/runs/v5_cnxt_s_facecut"
+      ],
+      "seeds": [
+        42
+      ],
+      "candidate_sets": {
+        "shipped_swap_facecut": {
+          "members": [
+            "final_resnet50",
+            "v5_cnxt_s_facecut",
+            "final_swin_t"
+          ],
+          "weights": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ]
+        }
+      }
+    },
+    {
+      "id": "E6",
+      "idea": "gridmask structured dropout on ConvNeXt-Small",
+      "runs": [
+        "v5_cnxt_s_gridmask"
+      ],
+      "commands": [
+        "python src/train.py --arch convnext_small --lr 3e-4 --epochs 12 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --seed 42 --struct_drop gridmask --struct_p 0.5 --out_dir outputs/runs/v5_cnxt_s_gridmask"
+      ],
+      "seeds": [
+        42
+      ],
+      "candidate_sets": {
+        "shipped_swap_gridmask": {
+          "members": [
+            "final_resnet50",
+            "v5_cnxt_s_gridmask",
+            "final_swin_t"
+          ],
+          "weights": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ]
+        }
+      }
+    },
+    {
+      "id": "E7",
+      "idea": "multi-crop TTA, no training",
+      "runs": [],
+      "commands": [],
+      "seeds": [],
+      "candidate_sets": {
+        "shipped_crop90": {
+          "members": [
+            "final_resnet50",
+            "e_cnxt_small",
+            "final_swin_t"
+          ],
+          "weights": [
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333
+          ],
+          "views": [
+            "orig",
+            "flip",
+            "crop90"
+          ]
+        }
+      }
+    },
+    {
+      "id": "E8",
+      "idea": "L2 logistic-regression stacking over member logits (src/stack.py)",
+      "runs": [],
+      "commands": [
+        "python src/stack.py --C 1.0 --seed 42 --out outputs/ablations/stack_v5.json"
+      ],
+      "seeds": [
+        42
+      ],
+      "candidate_sets": {
+        "stack": {
+          "pool": "shipped 3 + every v5 member finished by 10 Nov, capped so the T4 estimate stays < 150 s (drop slowest first)",
+          "scoring": "out-of-fold on val, 5-fold StratifiedGroupKFold on group_id"
+        }
+      }
+    },
+    {
+      "id": "E9",
+      "idea": "patch-level EfficientNet-B0 member",
+      "runs": [
+        "v5_patch_b0"
+      ],
+      "commands": [
+        "python src/train.py --arch patch_b0 --lr 1e-3 --epochs 12 --seed 42 --ema_decay 0.99 --backbone_lr_mult 1.0 --label_smoothing 0.05 --aug_level strong --conflict drop --bs 64 --out_dir outputs/runs/v5_patch_b0"
+      ],
+      "seeds": [
+        42
+      ],
+      "candidate_sets": {
+        "shipped_plus_patch_b0": {
+          "members": [
+            "final_resnet50",
+            "e_cnxt_small",
+            "final_swin_t",
+            "v5_patch_b0"
+          ],
+          "weights": [
+            0.2666666667,
+            0.2666666667,
+            0.2666666667,
+            0.2
+          ],
+          "note": "0.8*mean(shipped 3) + 0.2*new"
+        }
+      }
+    },
+    {
+      "id": "E10",
+      "idea": "union of every passing candidate, scored once and only if several pass",
+      "runs": [],
+      "commands": [],
+      "seeds": [],
+      "candidate_sets": {
+        "union_of_passers": "built at decision time from the passing rows"
+      }
+    }
+  ],
+  "conditional_followups": {
+    "E3b/E4b": "only if a recipe gains >= +0.003 clean and worst as a single model at both seeds: retrain resnet50 and swin_t with that recipe (seed 42) and score the all-new trio once",
+    "clip_dinov2": "not run (decided 2026-11-03)"
+  },
+  "results": {
+    "E1": {
+      "verdict": "fail",
+      "set": {
+        "clean_auc": 0.9078,
+        "mean_auc": 0.9065,
+        "worst_auc": 0.9026,
+        "gain_clean": 0.0014,
+        "gain_worst": 0.001,
+        "clean_ci95": [
+          -0.0022,
+          0.0053
+        ],
+        "worst_ci95": [
+          -0.0019,
+          0.0038
+        ],
+        "t4_est_s": 80.2
+      },
+      "single": {
+        "clean_auc": 0.8639,
+        "mean_auc": 0.8486,
+        "worst_auc": 0.6754,
+        "gain_clean": -0.0426,
+        "gain_worst": -0.2263,
+        "clean_ci95": [
+          -0.0567,
+          -0.0294
+        ],
+        "worst_ci95": [
+          -0.2547,
+          -0.1964
+        ],
+        "t4_est_s": 8.5
+      },
+      "logit_corr_with_shipped": 0.823
+    },
+    "E2": {
+      "verdict": "fail",
+      "set": {
+        "clean_auc": 0.907,
+        "mean_auc": 0.9064,
+        "worst_auc": 0.9023,
+        "gain_clean": 0.0005,
+        "gain_worst": 0.0007,
+        "clean_ci95": [
+          -0.0013,
+          0.0023
+        ],
+        "worst_ci95": [
+          -0.0008,
+          0.0019
+        ],
+        "t4_est_s": 72.5
+      },
+      "single": {
+        "clean_auc": 0.6444,
+        "mean_auc": 0.6557,
+        "worst_auc": 0.6368,
+        "gain_clean": -0.2621,
+        "gain_worst": -0.2648,
+        "clean_ci95": [
+          -0.2908,
+          -0.2321
+        ],
+        "worst_ci95": [
+          -0.297,
+          -0.244
+        ],
+        "t4_est_s": 0.8
+      },
+      "logit_corr_with_shipped": 0.3374
+    },
+    "E7": {
+      "verdict": "fail",
+      "set": {
+        "clean_auc": 0.9075,
+        "mean_auc": 0.9068,
+        "worst_auc": 0.9041,
+        "gain_clean": 0.001,
+        "gain_worst": 0.0025,
+        "clean_ci95": [
+          -0.0005,
+          0.0025
+        ],
+        "worst_ci95": [
+          -0.0,
+          0.0041
+        ],
+        "t4_est_s": 107.5
+      }
+    },
+    "E9": {
+      "verdict": "fail",
+      "set": {
+        "clean_auc": 0.908,
+        "mean_auc": 0.9071,
+        "worst_auc": 0.9032,
+        "gain_clean": 0.0015,
+        "gain_worst": 0.0016,
+        "clean_ci95": [
+          -0.001,
+          0.004
+        ],
+        "worst_ci95": [
+          -0.0008,
+          0.004
+        ]
+      },
+      "single": {
+        "clean_auc": 0.9027,
+        "mean_auc": 0.9009,
+        "worst_auc": 0.8919
+      }
+    },
+    "E8": {
+      "verdict": "fail",
+      "note": "pre-registered pool (shipped 3 + v5_srm_b0 + v5_dct_b0 + v5_patch_b0), scored once after the deviation below; this row governs",
+      "pool": [
+        "final_resnet50",
+        "e_cnxt_small",
+        "final_swin_t",
+        "v5_srm_b0",
+        "v5_dct_b0",
+        "v5_patch_b0"
+      ],
+      "oof": {
+        "clean_auc": 0.9069,
+        "mean_auc": 0.9061,
+        "worst_auc": 0.9022,
+        "std_auc": 0.0013
+      },
+      "gain_clean": 0.0004,
+      "gain_worst": 0.0006,
+      "clean_ci95": [
+        -0.0023,
+        0.0033
+      ],
+      "worst_ci95": [
+        -0.002,
+        0.003
+      ],
+      "source": "stack_v5_prereg_pool.json"
+    },
+    "E3": {
+      "verdict": "fail",
+      "set": {
+        "clean_auc": 0.9072,
+        "mean_auc": 0.9065,
+        "worst_auc": 0.9027,
+        "gain_clean": 0.0008,
+        "gain_worst": 0.0011,
+        "clean_ci95": [
+          -0.0008,
+          0.0024
+        ],
+        "worst_ci95": [
+          -0.0004,
+          0.0029
+        ],
+        "t4_est_s": 71.7
+      },
+      "note": "swap of the ConvNeXt-Small member (seed 42); single-model numbers in v5_single_cnxt.json"
+    },
+    "E4": {
+      "verdict": "fail",
+      "set": {
+        "clean_auc": 0.9062,
+        "mean_auc": 0.9051,
+        "worst_auc": 0.9009,
+        "gain_clean": -0.0003,
+        "gain_worst": -0.0008,
+        "clean_ci95": [
+          -0.0022,
+          0.0018
+        ],
+        "worst_ci95": [
+          -0.0031,
+          0.0019
+        ],
+        "t4_est_s": 72
+      },
+      "note": "swap of the ConvNeXt-Small member (seed 42); single-model numbers in v5_single_cnxt.json"
+    },
+    "E5": {
+      "verdict": "fail",
+      "set": {
+        "clean_auc": 0.9065,
+        "mean_auc": 0.9055,
+        "worst_auc": 0.9027,
+        "gain_clean": 0.0,
+        "gain_worst": 0.001,
+        "clean_ci95": [
+          -0.0013,
+          0.0015
+        ],
+        "worst_ci95": [
+          -0.0014,
+          0.0025
+        ],
+        "t4_est_s": 72
+      },
+      "note": "swap of the ConvNeXt-Small member (seed 42); single-model numbers in v5_single_cnxt.json"
+    },
+    "E6": {
+      "verdict": "fail",
+      "set": {
+        "clean_auc": 0.9062,
+        "mean_auc": 0.9052,
+        "worst_auc": 0.9018,
+        "gain_clean": -0.0003,
+        "gain_worst": 0.0002,
+        "clean_ci95": [
+          -0.0016,
+          0.001
+        ],
+        "worst_ci95": [
+          -0.0019,
+          0.0014
+        ],
+        "t4_est_s": 72
+      },
+      "note": "swap of the ConvNeXt-Small member (seed 42); single-model numbers in v5_single_cnxt.json"
+    },
+    "E8_pool_without_srm_dct": {
+      "verdict": "fail",
+      "pool": [
+        "final_resnet50",
+        "e_cnxt_small",
+        "final_swin_t",
+        "v5_patch_b0"
+      ],
+      "oof": {
+        "clean_auc": 0.9066,
+        "mean_auc": 0.9057,
+        "worst_auc": 0.9017,
+        "std_auc": 0.0014
+      },
+      "gain_clean": 0.0001,
+      "gain_worst": 0.0001,
+      "clean_ci95": [
+        -0.0024,
+        0.0025
+      ],
+      "worst_ci95": [
+        -0.0023,
+        0.0024
+      ],
+      "note": "deviation: pool after dropping srm_b0 and dct_b0 following their validation results; reported for transparency, does not govern",
+      "source": "stack_v5.json"
+    },
+    "deviations": [
+      "E8: the registered pool was shipped 3 + every finished v5 member; srm_b0 and dct_b0 were dropped after seeing their validation results (single-model weak or fragile, E1 and E2 failed), which deviates from the registered rule. The registered pool was then scored once (E8, governs) and the reduced pool kept as E8_pool_without_srm_dct.",
+      "E8 erratum: the registered command wrote --C 1.0 but src/stack.py takes --c; the commands field is left as registered."
+    ]
+  }
+}

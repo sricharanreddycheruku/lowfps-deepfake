@@ -82,3 +82,9 @@ highlights a cheek), which is the typical false-alarm route under degradation.
 - Grad-CAM shows where the gradient is large, not necessarily what the model needs.
   The figures support the statement that the decision uses the face interior and does not
   hinge on the image border or background, but they do not prove which artifact is used.
+
+Two sets of figures ship. The files directly in `gradcam/` are from the first fold-0
+three-member bundle, and the statistics quoted in the technical report come from them.
+`gradcam/fold0_p50/` holds the same figures for the fold-0 trio of the final recipe
+(mosaic probability 0.5), with its own `gradcam_stats.json` and `gradcam_cases.csv`.
+Neither set covers the six refit members, which were trained on the validation images.

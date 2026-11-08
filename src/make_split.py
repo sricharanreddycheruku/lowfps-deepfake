@@ -4,13 +4,20 @@ Uses StratifiedGroupKFold (5 folds, fold 0 = val) so near-duplicate images
 (same group_id from find_duplicates.py) never straddle train and val, and
 class balance is preserved in both splits. Groups with conflicting labels
 (a real and a fake image judged near-identical) are kept in train with a
-soft label of 0.5, since the plan's default is to keep rather than drop
-them; the choice is ablated later in Chunk 5.
+soft label of 0.5, since keeping them is the default; dropping them is
+ablated later (train.py --conflict).
 
 Usage:
     python src/make_split.py --dup_csv outputs/data/dup_groups.csv \
         --data_root data/raw/hackathon_dataset --out data/splits/split_v1.csv \
         --seed 42 --val_frac 0.2
+
+Other folds of the same partition (for the 5-fold ensemble):
+    --val_fold k              fold k is val, the other four folds are train
+    --holdout_fold 0 --val_fold j
+                              fold 0 is marked "holdout" (ignored by train.py),
+                              fold j is val, the remaining three folds are train;
+                              used to simulate the fold ensemble on fold 0
 """
 
 import argparse
@@ -55,6 +62,9 @@ def main():
     parser.add_argument("--out", required=True)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--val_frac", type=float, default=0.2)
+    parser.add_argument("--val_fold", type=int, default=0)
+    parser.add_argument("--holdout_fold", type=int, default=-1,
+                        help="fold marked 'holdout' and left out of train and val (-1 = none)")
     args = parser.parse_args()
 
     rows = load_groups(args.dup_csv)
@@ -71,8 +81,9 @@ def main():
     for fold_idx, (_train_idx, val_idx) in enumerate(sgkf.split(image_ids, labels, groups)):
         fold_of_index[val_idx] = fold_idx
 
-    val_fold = 0
-    split_of_index = np.where(fold_of_index == val_fold, "val", "train")
+    assert 0 <= args.val_fold < n_folds and args.val_fold != args.holdout_fold
+    split_of_index = np.where(fold_of_index == args.val_fold, "val", "train")
+    split_of_index = np.where(fold_of_index == args.holdout_fold, "holdout", split_of_index)
 
     for r, split in zip(rows, split_of_index):
         r["split"] = split
@@ -110,7 +121,8 @@ def main():
 
     summary = {
         "n_total": n_total,
-        "n_train": n_total - n_val,
+        "n_train": sum(1 for r in rows if r["split"] == "train"),
+        "n_holdout": sum(1 for r in rows if r["split"] == "holdout"),
         "n_val": n_val,
         "val_frac_actual": round(val_frac_actual, 4),
         "train_fake_ratio": round(train_ratio, 4),

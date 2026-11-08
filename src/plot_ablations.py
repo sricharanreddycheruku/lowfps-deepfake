@@ -1,4 +1,4 @@
-"""Figures for the Chunk 5 ablations.
+"""Figures for the hyperparameter ablations.
 
 For every group in ablations.csv (learning rate, EMA, label smoothing, ...)
 writes a grouped bar chart of clean / mean / worst variant AUC

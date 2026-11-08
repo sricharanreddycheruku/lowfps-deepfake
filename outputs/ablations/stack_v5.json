@@ -1,0 +1,80 @@
+{
+  "members": [
+    "final_resnet50",
+    "e_cnxt_small",
+    "final_swin_t",
+    "v5_patch_b0"
+  ],
+  "C": 1.0,
+  "folds": 5,
+  "seed": 42,
+  "oof": {
+    "clean_auc": 0.9066,
+    "mean_auc": 0.9057,
+    "worst_auc": 0.9017,
+    "std_auc": 0.0014
+  },
+  "shipped": {
+    "clean_auc": 0.9065,
+    "mean_auc": 0.9055,
+    "worst_auc": 0.9016,
+    "std_auc": 0.0015
+  },
+  "gain_clean": 0.0001,
+  "gain_worst": 0.0001,
+  "clean_ci95": [
+    -0.0024,
+    0.0025
+  ],
+  "worst_ci95": [
+    -0.0023,
+    0.0024
+  ],
+  "t4_est_s": null,
+  "per_variant_oof": {
+    "clean": 0.9066,
+    "jpeg_q90": 0.9065,
+    "jpeg_q70": 0.9057,
+    "jpeg_q50": 0.9058,
+    "jpeg_q30": 0.9051,
+    "blur_sigma1": 0.9067,
+    "blur_sigma2": 0.9036,
+    "noise_std5": 0.9062,
+    "noise_std10": 0.9062,
+    "noise_std20": 0.9042,
+    "downscale_0.5": 0.9061,
+    "downscale_0.25": 0.9017,
+    "brightness_plus30": 0.9032,
+    "brightness_minus30": 0.9062,
+    "contrast_0.6": 0.9049,
+    "contrast_1.4": 0.9064,
+    "grayscale": 0.9044,
+    "centercrop90": 0.9087,
+    "rotation5": 0.9064,
+    "hflip": 0.9066,
+    "resize160": 0.9065,
+    "resize299": 0.9064,
+    "combo_jpeg50_blur1_noise5": 0.9066
+  },
+  "final_fit": {
+    "mean": [
+      0.24168647825717926,
+      0.18315337598323822,
+      0.21785706281661987,
+      0.34410855174064636
+    ],
+    "std": [
+      2.2573578357696533,
+      2.2808969020843506,
+      2.2241721153259277,
+      2.2964835166931152
+    ],
+    "coef": [
+      0.6509646116044877,
+      0.6714719786641546,
+      0.5847439084623179,
+      0.31105270271615154
+    ],
+    "intercept": -0.007219016670224791
+  }
+}

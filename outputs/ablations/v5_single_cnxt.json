@@ -1,0 +1,168 @@
+{
+  "purpose": "single ConvNeXt-Small models behind the E3-E6 swap candidates in v5_prereg.json; recipe of e_cnxt_small unless noted; val fold 0, 1408 images, worst = worst of 23 variants",
+  "baselines": {
+    "e_cnxt_small (seed 42)": {
+      "clean_auc": 0.906,
+      "mean_auc": 0.9047,
+      "worst_auc": 0.8992
+    },
+    "v2_cnxt_small_s7 (seed 7)": {
+      "clean_auc": 0.9082,
+      "mean_auc": 0.9073,
+      "worst_auc": 0.9035
+    }
+  },
+  "runs": [
+    {
+      "run": "v5_cnxt_s_sam_s42",
+      "baseline": "e_cnxt_small",
+      "no_tta": {
+        "clean_auc": 0.9081,
+        "mean_auc": 0.9068,
+        "worst_auc": 0.9022
+      },
+      "flip_tta": {
+        "clean_auc": 0.9073,
+        "mean_auc": 0.9063,
+        "worst_auc": 0.9021
+      },
+      "delta_vs_seed_matched_baseline_flip_tta": {
+        "clean_auc": 0.0013,
+        "mean_auc": 0.0016,
+        "worst_auc": 0.0029
+      },
+      "delta_vs_seed42_baseline_flip_tta": {
+        "clean_auc": 0.0013,
+        "mean_auc": 0.0016,
+        "worst_auc": 0.0029
+      },
+      "setting": "SAM rho 0.05, seed 42"
+    },
+    {
+      "run": "v5_cnxt_s_sam_s7",
+      "baseline": "v2_cnxt_small_s7",
+      "no_tta": {
+        "clean_auc": 0.9062,
+        "mean_auc": 0.9057,
+        "worst_auc": 0.9028
+      },
+      "flip_tta": {
+        "clean_auc": 0.9054,
+        "mean_auc": 0.9051,
+        "worst_auc": 0.9024
+      },
+      "delta_vs_seed_matched_baseline_flip_tta": {
+        "clean_auc": -0.0028,
+        "mean_auc": -0.0022,
+        "worst_auc": -0.0011
+      },
+      "delta_vs_seed42_baseline_flip_tta": {
+        "clean_auc": -0.0006,
+        "mean_auc": 0.0004,
+        "worst_auc": 0.0032
+      },
+      "setting": "SAM rho 0.05, seed 7"
+    },
+    {
+      "run": "v5_cnxt_s_elr_s42",
+      "baseline": "e_cnxt_small",
+      "no_tta": {
+        "clean_auc": 0.9049,
+        "mean_auc": 0.9031,
+        "worst_auc": 0.8974
+      },
+      "flip_tta": {
+        "clean_auc": 0.9053,
+        "mean_auc": 0.9036,
+        "worst_auc": 0.8973
+      },
+      "delta_vs_seed_matched_baseline_flip_tta": {
+        "clean_auc": -0.0007,
+        "mean_auc": -0.0011,
+        "worst_auc": -0.0019
+      },
+      "delta_vs_seed42_baseline_flip_tta": {
+        "clean_auc": -0.0007,
+        "mean_auc": -0.0011,
+        "worst_auc": -0.0019
+      },
+      "setting": "ELR lambda 3.0 beta 0.7, seed 42"
+    },
+    {
+      "run": "v5_cnxt_s_elr_s7",
+      "baseline": "v2_cnxt_small_s7",
+      "no_tta": {
+        "clean_auc": 0.9058,
+        "mean_auc": 0.9047,
+        "worst_auc": 0.898
+      },
+      "flip_tta": {
+        "clean_auc": 0.907,
+        "mean_auc": 0.9057,
+        "worst_auc": 0.8995
+      },
+      "delta_vs_seed_matched_baseline_flip_tta": {
+        "clean_auc": -0.0012,
+        "mean_auc": -0.0016,
+        "worst_auc": -0.004
+      },
+      "delta_vs_seed42_baseline_flip_tta": {
+        "clean_auc": 0.001,
+        "mean_auc": 0.001,
+        "worst_auc": 0.0003
+      },
+      "setting": "ELR lambda 3.0 beta 0.7, seed 7"
+    },
+    {
+      "run": "v5_cnxt_s_facecut",
+      "baseline": "e_cnxt_small",
+      "no_tta": {
+        "clean_auc": 0.9052,
+        "mean_auc": 0.904,
+        "worst_auc": 0.8998
+      },
+      "flip_tta": {
+        "clean_auc": 0.9048,
+        "mean_auc": 0.9037,
+        "worst_auc": 0.9006
+      },
+      "delta_vs_seed_matched_baseline_flip_tta": {
+        "clean_auc": -0.0012,
+        "mean_auc": -0.001,
+        "worst_auc": 0.0014
+      },
+      "delta_vs_seed42_baseline_flip_tta": {
+        "clean_auc": -0.0012,
+        "mean_auc": -0.001,
+        "worst_auc": 0.0014
+      },
+      "setting": "facecut p 0.5, seed 42"
+    },
+    {
+      "run": "v5_cnxt_s_gridmask",
+      "baseline": "e_cnxt_small",
+      "no_tta": {
+        "clean_auc": 0.9032,
+        "mean_auc": 0.9017,
+        "worst_auc": 0.8971
+      },
+      "flip_tta": {
+        "clean_auc": 0.9045,
+        "mean_auc": 0.9027,
+        "worst_auc": 0.899
+      },
+      "delta_vs_seed_matched_baseline_flip_tta": {
+        "clean_auc": -0.0015,
+        "mean_auc": -0.002,
+        "worst_auc": -0.0002
+      },
+      "delta_vs_seed42_baseline_flip_tta": {
+        "clean_auc": -0.0015,
+        "mean_auc": -0.002,
+        "worst_auc": -0.0002
+      },
+      "setting": "gridmask p 0.5, seed 42"
+    }
+  ],
+  "files": "per-variant AUC in outputs/eval/<run>.{csv,json}; logs and config in outputs/runs/<run>/; rows in ablations.csv (group v5_experiment)"
+}

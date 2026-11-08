@@ -17,7 +17,7 @@ distribution shift. Ties are broken by higher mean F1.
 
 Usage:
     python src/threshold.py --ckpt outputs/runs/smoke_efficientnet_b0/best.pt \
-        --split_csv data/splits/split_v1.csv --out outputs/eval/threshold.json
+        --split_csv data/splits/split_v1.csv --out outputs/eval/threshold_baseline_b0.json
 """
 
 import argparse
@@ -52,7 +52,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ckpt", nargs="+", required=True)
     parser.add_argument("--split_csv", default="data/splits/split_v1.csv")
-    parser.add_argument("--out", default="outputs/eval/threshold.json")
+    parser.add_argument("--out", default="outputs/eval/threshold_baseline_b0.json")
     parser.add_argument("--bs", type=int, default=64)
     parser.add_argument("--num_workers", type=int, default=4)
     args = parser.parse_args()

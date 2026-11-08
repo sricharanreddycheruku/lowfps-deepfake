@@ -1,0 +1,47 @@
+{
+  "round": "v11",
+  "written": "2026-11-05, before any v11 job and before the v10 result",
+  "reason": "All shipped members train on 5,592 of 7,000 labelled images. On fold 0, 60% to 80% of the data gave about +0.004 (ConvNeXt-S) and +0.007 (Swin-T) clean AUC per model, while recipe, backbone and stacking rounds gave at most +0.003. A refit on all labelled images is the largest lever left for test AUC.",
+  "recipe": "the recipe of the v10 outcome: v10 passer with the highest tie-break mean, otherwise v8 p50. Fixed stopping, no selection on val: epoch 12 for resnet50 and swin_t, epoch 9 for convnext_small, chosen from the per-epoch mean score over 14 runs per arch (v7, v8, v9 logs), written to fixed.pt. The cosine schedule stays at 12 epochs.",
+  "trios": {
+    "fx_s42": "fold-0 split, seed 42, fixed.pt scored on val: the cost of dropping best.pt selection",
+    "full_s42": "--all_data, seed 42",
+    "full_s7": "--all_data, seed 7"
+  },
+  "candidate": "full_s42 + full_s7, six members, equal mean_logit, orig+flip",
+  "switch_rule": {
+    "gate_fixed": "fx_s42 fixed.pt trio vs the best.pt trio of the same recipe and seed on val fold 0: clean and worst-of-23 point gains both >= -0.003, and no extended variant other than clean falls by more than 0.005",
+    "gate_sane": "every refit member finishes, final train loss within 0.05 of its fx_s42 counterpart, bundle and inference pass the format check, test predictions have Spearman >= 0.8 with the current bundle (only a broken-model check, never used to choose between models)",
+    "gate_t4": "cold run on a T4 under 240 s",
+    "pass": "all gates: ship the refit bundle",
+    "none_pass": "keep the v10 outcome bundle"
+  },
+  "limits": "The refit has no held-out data, so its AUC cannot be measured. The expected gain is an extrapolation from 60% to 80% on fold 0. Val rows are in the refit training set, so val metrics of refit models must never be reported as estimates; reported figures stay those of the fold-0 models.",
+  "rerun_policy": "rerun only for a crash, OOM or a run that did not learn.",
+  "never": "test images in any statistic or training; the Spearman check selects nothing",
+  "results": {
+    "recipe": "v8 p50 (no v10 winner), heavy_p 0",
+    "gate_fixed": true,
+    "gate_loss": true,
+    "gain_clean": -0.0006,
+    "gain_worst": -0.0011,
+    "pixelate8_gain": -0.0018,
+    "fixed_trio": {
+      "clean": 0.9053,
+      "mean": 0.9041,
+      "worst": 0.8978
+    },
+    "best_trio": {
+      "clean": 0.9059,
+      "mean": 0.9047,
+      "worst": 0.8988
+    },
+    "spearman_vs_v8_bundle": 0.9846,
+    "rerun_max_conf_diff": 0.0,
+    "tf_parity_max_conf_diff": 2.98e-07,
+    "tf_test_max_conf_diff": 0.000677,
+    "tf_label_flips": 0,
+    "t4_cold_s": null,
+    "note": "refit has no held-out score; bundle rc 1 because the size assert (805 MB against the 500 MB limit in src/bundle.py) fired after the save, file complete"
+  }
+}

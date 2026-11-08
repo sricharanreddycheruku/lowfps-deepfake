@@ -1,0 +1,31 @@
+{
+"round": "v9",
+"written": "2026-11-04, before any v9 job and before any v8 result",
+"reason": "The stress suite on the v7 bundle (outputs/eval/v7_fused_stress.json) gave pixelate24 0.6898, pixelate12 0.7828, downscale_0.125 0.8180 and blur_sigma4 0.8474 against 0.8855 or better elsewhere. Training covers blocks up to 16 px, blur up to sigma 2 and down-scale to 0.25 only.",
+"reference": "v7 bundle, as in v8. v8 and v9 passers compete under the shared tie-break below.",
+"change": "two augmentation settings on top of the v7 recipe: --mosaic_max 32 (blocks 4 to 32 px) with mosaic_p 0.3, and --heavy_p (strong blur sigma 2 to 5 or bilinear round trip at scale 0.08 to 0.25, equal chance).",
+"trios": {
+"w_s42": "mosaic_p 0.3, mosaic_max 32, seed 42",
+"wh_s42": "w plus heavy_p 0.15, seed 42",
+"wh30_s42": "w plus heavy_p 0.3, seed 42",
+"w_s7": "as w, seed 7",
+"wh_s7": "as wh, seed 7",
+"wh30_s7": "as wh30, seed 7",
+"w_s123": "as w, seed 123, after scoring, for seed spread only",
+"wh_s123": "as wh, seed 123, after scoring, for seed spread only"
+},
+"candidates": {"w": "w_s42", "wh": "wh_s42", "wh30": "wh30_s42", "wx2": "w_s42 + w_s7", "whx2": "wh_s42 + wh_s7", "wh30x2": "wh30_s42 + wh30_s7"},
+"switch_rule": {
+"common_required": "the four common checks of v8_prereg.json, against v7",
+"route_a_pixelate": "as in v8",
+"route_b_general": "as in v8",
+"route_c_stress": "mean AUC over the stress variants except clean gains >= +0.02 vs v7 and is above the best p=0.15 trio available, and pixelate8 falls by no more than 0.005",
+"pass": "all common checks and at least one route",
+"several_pass": "across v8 and v9, take the highest mean AUC over the default, extended and stress variants",
+"none_pass": "keep the v7 bundle, or the v8 winner if v8 has one"
+},
+"limits": "Route C is added after seeing the v7 stress numbers, and the trained ranges now cover pixelate12, pixelate24, downscale_0.125 and blur_sigma4, so those rows are in-distribution and the stress suite is no longer an unseen test. Six candidates on one validation fold, so the winner's gain is optimistic.",
+"rerun_policy": "rerun only for a crash, OOM or a run that did not learn. Candidates are scored once.",
+"never": "test images in any statistic or training",
+"results": null
+}
