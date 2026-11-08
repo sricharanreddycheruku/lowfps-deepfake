@@ -1,0 +1,23 @@
+{
+  "script": "submission/inference_script_tf.py",
+  "weights": "tf_model (export from src/export_tf.py)",
+  "host": "CPU only (CUDA hidden), 24 cores, TensorFlow 2.17.1, numpy 1.26.4",
+  "images": 3000,
+  "batch_size": 64,
+  "tta": true,
+  "fusion": "mean_logit",
+  "wall_clock": "5:49.71",
+  "wall_clock_seconds": 349.71,
+  "peak_resident_memory_kb": 5222920,
+  "predicted_fake": 1549,
+  "predicted_fake_share": 0.5163,
+  "mean_confidence": 0.5221,
+  "check_predictions": "OK: all checks passed",
+  "vs_predictions_csv": {
+    "rows_matched": 3000,
+    "max_abs_confidence_diff": 0.001908,
+    "mean_abs_confidence_diff": 5.53e-05,
+    "label_flips": 1
+  },
+  "note": "predictions.csv comes from the PyTorch GPU fp16 path; the TF run was not timed on a T4"
+}

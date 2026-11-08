@@ -1,26 +1,30 @@
 {
   "n_images": 500,
   "members": [
-    "e_cnxt_small",
-    "final_resnet50",
-    "final_swin_t"
+    "v11_full_s42_resnet50",
+    "v11_full_s42_cnxt_small",
+    "v11_full_s42_swin_t",
+    "v11_full_s7_resnet50",
+    "v11_full_s7_cnxt_small",
+    "v11_full_s7_swin_t"
   ],
   "failed_members": [],
   "fusion": "mean_logit",
   "tta": true,
   "reference": "PyTorch fp32 on CPU, same preprocessing and fusion",
-  "max_abs_diff_confidence": 4.172325134277344e-07,
-  "mean_abs_diff_confidence": 3.8012863967651356e-08,
+  "max_abs_diff_confidence": 2.980232238769531e-07,
+  "mean_abs_diff_confidence": 4.213303483879827e-08,
   "max_abs_diff_logit_per_member": {
-    "e_cnxt_small": 3.2186508178710938e-06,
-    "final_resnet50": 3.874301910400391e-06,
-    "final_swin_t": 3.3080577850341797e-06
+    "v11_full_s42_resnet50": 3.6954879760742188e-06,
+    "v11_full_s42_cnxt_small": 2.86102294921875e-06,
+    "v11_full_s42_swin_t": 5.4836273193359375e-06,
+    "v11_full_s7_resnet50": 4.172325134277344e-06,
+    "v11_full_s7_cnxt_small": 3.635883331298828e-06,
+    "v11_full_s7_swin_t": 2.9802322387695312e-06
   },
-  "auc_tf": 0.923476,
-  "auc_pytorch": 0.923476,
+  "auc_tf": 0.943876,
+  "auc_pytorch": 0.943876,
   "label_flips_at_threshold": 0,
   "auc_equal_to_3_decimals": true,
-  "pass": true,
-  "max_abs_diff_vs_shipped_gpu_fp16": 0.0009998673825073467,
-  "auc_shipped_gpu_fp16": 0.923524
+  "pass": true
 }

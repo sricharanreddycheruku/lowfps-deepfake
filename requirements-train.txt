@@ -7,3 +7,5 @@ scikit-learn==1.7.2
 matplotlib==3.10.9
 imagehash==4.3.2
 tqdm==4.70.1
+timm==1.0.31
+huggingface_hub==2.4.0

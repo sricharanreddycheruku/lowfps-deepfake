@@ -6,5 +6,15 @@
   "convnext_base": 87567489,
   "swin_t": 27520123,
   "swin_s": 48838027,
-  "resnet50": 23510081
+  "resnet50": 23510081,
+  "srm_b0": 4008862,
+  "dct_b0": 960129,
+  "patch_b0": 851921,
+  "regnet_y_16gf": 80568165,
+  "maxvit_t": 30408137,
+  "vit_b_16": 85799425,
+  "swin_v2_t": 27583339,
+  "convnext_small_22k": 49455457,
+  "swin_small_22k": 48838027,
+  "effv2s_21k": 20178769
 }
