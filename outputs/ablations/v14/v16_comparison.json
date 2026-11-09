@@ -1,0 +1,14 @@
+{
+  "samples": 3000,
+  "v16_sha256": "36c5d3b495429aac549525ca2430409808a701ad7ee97da0ec471ab46d337544",
+  "pearson_corr_v11": 0.9763675416678167,
+  "pearson_corr_v15": 0.9793267893263264,
+  "flips_vs_v11": 90,
+  "flips_vs_v15": 86,
+  "v11_fake_count": 1569,
+  "v15_fake_count": 1575,
+  "v16_fake_count": 1547,
+  "mean_conf_v11": 0.5278385943333334,
+  "mean_conf_v15": 0.5273946423333333,
+  "mean_conf_v16": 0.5267075666666666
+}

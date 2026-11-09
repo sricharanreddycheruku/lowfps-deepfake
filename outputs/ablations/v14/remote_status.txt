@@ -1,0 +1,14 @@
+2026-11-09T15:37:10+05:30
+===remaining.log
+epoch 5: loss 0.5452 clean_auc 0.8955 robust_auc 0.8943 score 0.8949 (27.6s)
+epoch 6: loss 0.5185 clean_auc 0.8974 robust_auc 0.8961 score 0.8967 (27.6s)
+epoch 7: loss 0.5127 clean_auc 0.9003 robust_auc 0.8985 score 0.8994 (27.6s)
+epoch 8: loss 0.4989 clean_auc 0.9015 robust_auc 0.9001 score 0.9008 (27.6s)
+epoch 9: loss 0.4989 clean_auc 0.9024 robust_auc 0.9010 score 0.9017 (27.6s)
+===fold4.log
+Verified inference inputs staged
+aug
+cnxt_small
+consistency
+control
+swin_t

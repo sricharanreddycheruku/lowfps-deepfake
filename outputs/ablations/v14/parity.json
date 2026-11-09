@@ -1,0 +1,26 @@
+{
+  "reference_vs_base1": {
+    "sha256": "12ffd29223cad2cb2fb1a018644f1ada656bba51fe5412f410e51b0d78717d4d",
+    "identical": true,
+    "max_confidence_delta": 0.0,
+    "label_flips": 0
+  },
+  "base1_vs_base2": {
+    "sha256": "12ffd29223cad2cb2fb1a018644f1ada656bba51fe5412f410e51b0d78717d4d",
+    "identical": true,
+    "max_confidence_delta": 0.0,
+    "label_flips": 0
+  },
+  "base1_vs_fast1": {
+    "sha256": "12ffd29223cad2cb2fb1a018644f1ada656bba51fe5412f410e51b0d78717d4d",
+    "identical": true,
+    "max_confidence_delta": 0.0,
+    "label_flips": 0
+  },
+  "base1_vs_fast2": {
+    "sha256": "12ffd29223cad2cb2fb1a018644f1ada656bba51fe5412f410e51b0d78717d4d",
+    "identical": true,
+    "max_confidence_delta": 0.0,
+    "label_flips": 0
+  }
+}

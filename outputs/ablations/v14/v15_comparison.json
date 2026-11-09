@@ -1,0 +1,14 @@
+{
+  "samples": 3000,
+  "v15_sha256": "2de6799db27d364d7f107d63528cc7a185d415de658d722cbf08e20f0c746f8e",
+  "runtime_seconds": 49,
+  "pearson_correlation_with_v11": 0.9963198807219383,
+  "mean_abs_confidence_delta": 0.016921441333333335,
+  "max_abs_confidence_delta": 0.298274,
+  "label_flips": 38,
+  "label_flip_percentage": 1.2666666666666666,
+  "v11_mean_confidence": 0.5278385943333334,
+  "v15_mean_confidence": 0.5273946423333333,
+  "v11_fake_count": 1569,
+  "v15_fake_count": 1575
+}

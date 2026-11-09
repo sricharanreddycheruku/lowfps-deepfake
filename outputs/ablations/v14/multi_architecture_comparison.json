@@ -1,0 +1,160 @@
+{
+  "fold0": {
+    "1. Incumbent (ResNet+Cnxt1k+Swin1k)": {
+      "clean": 0.905922082849025,
+      "pixelate8": 0.85469940591502,
+      "stress_mean": 0.8888592663928048,
+      "stress_worst": 0.707544314219295,
+      "worst_name": "pixelate24"
+    },
+    "2. Foundation Trio (ResNet50+Cnxt22k+Swin22k)": {
+      "clean": 0.9057011171380602,
+      "pixelate8": 0.8688048882861941,
+      "stress_mean": 0.8939810606436913,
+      "stress_worst": 0.7339804904429807,
+      "worst_name": "pixelate24"
+    },
+    "3. Foundation Quad (+ MaxViT-T)": {
+      "clean": 0.9072024732016013,
+      "pixelate8": 0.8704918959059795,
+      "stress_mean": 0.8955316495544363,
+      "stress_worst": 0.7315700471393517,
+      "worst_name": "pixelate24"
+    },
+    "4. Trio Pure Modern (Cnxt22k+Swin22k+MaxViT-T)": {
+      "clean": 0.9033966162985924,
+      "pixelate8": 0.8687897536484567,
+      "stress_mean": 0.8928210747424473,
+      "stress_worst": 0.7285017515820742,
+      "worst_name": "pixelate24"
+    },
+    "5. Pure Modern + DINO": {
+      "clean": 0.9065940607645615,
+      "pixelate8": 0.869774514077231,
+      "stress_mean": 0.894636455135656,
+      "stress_worst": 0.7309222846441948,
+      "worst_name": "pixelate24"
+    },
+    "6. Pure Modern + SRM": {
+      "clean": 0.9086755779413663,
+      "pixelate8": 0.8664025167893582,
+      "stress_mean": 0.8949774889726699,
+      "stress_worst": 0.7289507458349477,
+      "worst_name": "pixelate24"
+    },
+    "7. Pure Modern + DINO + SRM": {
+      "clean": 0.9093899328425675,
+      "pixelate8": 0.8665488182874855,
+      "stress_mean": 0.8954875392000053,
+      "stress_worst": 0.7308829345860777,
+      "worst_name": "pixelate24"
+    },
+    "8. All 6-Family Blend": {
+      "clean": 0.910316172672091,
+      "pixelate8": 0.8683286516853933,
+      "stress_mean": 0.8964738518993169,
+      "stress_worst": 0.7322844020405528,
+      "worst_name": "pixelate24"
+    },
+    "Standalone MaxViT-T": {
+      "clean": 0.905583066963709,
+      "pixelate8": 0.8612234437556503,
+      "stress_mean": 0.8915603982256926,
+      "stress_worst": 0.7078601236600801,
+      "worst_name": "pixelate24"
+    },
+    "Standalone DINO": {
+      "clean": 0.8934249079814026,
+      "pixelate8": 0.8069254084334236,
+      "stress_mean": 0.8723595102027639,
+      "stress_worst": 0.712745584721684,
+      "worst_name": "pixelate24"
+    },
+    "Standalone SRM": {
+      "clean": 0.8312497982048302,
+      "pixelate8": 0.7375825342244609,
+      "stress_mean": 0.7803453367309432,
+      "stress_worst": 0.5976940865943432,
+      "worst_name": "heavy_combo"
+    }
+  },
+  "fold4": {
+    "1. Incumbent (ResNet+Cnxt1k+Swin1k)": {
+      "clean": 0.8949978961196235,
+      "pixelate8": 0.8333244388797093,
+      "stress_mean": 0.8777545504472095,
+      "stress_worst": 0.7177824074549205,
+      "worst_name": "pixelate24"
+    },
+    "2. Foundation Trio (ResNet50+Cnxt22k+Swin22k)": {
+      "clean": 0.9029556953581215,
+      "pixelate8": 0.8544309773294061,
+      "stress_mean": 0.8893439182594449,
+      "stress_worst": 0.7545818409466436,
+      "worst_name": "pixelate24"
+    },
+    "3. Foundation Quad (+ MaxViT-T)": {
+      "clean": 0.9029741684541098,
+      "pixelate8": 0.8563839940886093,
+      "stress_mean": 0.8897832463755759,
+      "stress_worst": 0.7578967353934256,
+      "worst_name": "pixelate24"
+    },
+    "4. Trio Pure Modern (Cnxt22k+Swin22k+MaxViT-T)": {
+      "clean": 0.9022270343496958,
+      "pixelate8": 0.8565861718613696,
+      "stress_mean": 0.8896341195451409,
+      "stress_worst": 0.7574667227701434,
+      "worst_name": "pixelate24"
+    },
+    "5. Pure Modern + DINO": {
+      "clean": 0.9034637054977986,
+      "pixelate8": 0.8560535309270414,
+      "stress_mean": 0.8900865261921922,
+      "stress_worst": 0.7556276234362012,
+      "worst_name": "pixelate24"
+    },
+    "6. Pure Modern + SRM": {
+      "clean": 0.9041010273093937,
+      "pixelate8": 0.8562362093207031,
+      "stress_mean": 0.8900987100147599,
+      "stress_worst": 0.7577725551370601,
+      "worst_name": "pixelate24"
+    },
+    "7. Pure Modern + DINO + SRM": {
+      "clean": 0.9041215529716029,
+      "pixelate8": 0.8545510524533299,
+      "stress_mean": 0.8898514547299942,
+      "stress_worst": 0.7559488500497747,
+      "worst_name": "pixelate24"
+    },
+    "8. All 6-Family Blend": {
+      "clean": 0.9040733176654111,
+      "pixelate8": 0.8546639435954801,
+      "stress_mean": 0.8898701646605465,
+      "stress_worst": 0.7558718788164904,
+      "worst_name": "pixelate24"
+    },
+    "Standalone MaxViT-T": {
+      "clean": 0.8953909625509292,
+      "pixelate8": 0.8491743552376358,
+      "stress_mean": 0.8816754519132417,
+      "stress_worst": 0.7425558554582867,
+      "worst_name": "pixelate24"
+    },
+    "Standalone DINO": {
+      "clean": 0.8839355904719877,
+      "pixelate8": 0.7716437976580219,
+      "stress_mean": 0.8596347853134151,
+      "stress_worst": 0.6953314381305227,
+      "worst_name": "pixelate24"
+    },
+    "Standalone SRM": {
+      "clean": 0.8228409569063722,
+      "pixelate8": 0.7678219193546733,
+      "stress_mean": 0.782897886672556,
+      "stress_worst": 0.6022742433727768,
+      "worst_name": "noise_std40"
+    }
+  }
+}

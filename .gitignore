@@ -13,6 +13,8 @@ Screenshot*.png
 data/raw/
 data/*.zip
 hackathon_dataset.zip
+*.zip
+fake-or-real-deepfake-hackathon-codex-initial-import/
 
 # weights and checkpoints (too large for GitHub; share via Drive)
 *.pt

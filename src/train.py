@@ -45,6 +45,7 @@ import torch.nn as nn
 from PIL import Image, ImageFilter
 from sklearn.metrics import roc_auc_score
 from torch.utils.data import DataLoader, Dataset
+from torchvision.transforms.functional import gaussian_blur
 
 from augment import SelfBlend, build_eval_transform, build_train_transform
 from models import build_model, get_head_module
@@ -294,6 +295,37 @@ def evaluate(model, loader, device):
     return roc_auc_score(all_targets, all_probs)
 
 
+def generalized_cross_entropy(logits, targets, q=0.7):
+    """Bounded per-example loss, with soft targets treated as class weights."""
+    logits = logits.float()
+    log_fake = nn.functional.logsigmoid(logits)
+    log_real = nn.functional.logsigmoid(-logits)
+    return -(targets * torch.expm1(q * log_fake)
+             + (1 - targets) * torch.expm1(q * log_real)) / q
+
+
+def stronger_view(images, step):
+    """Apply one extra spatial degradation to normalized NCHW images."""
+    height, width = images.shape[-2:]
+    family = step % 3
+    severity = (step // 3) % 5
+    if family == 0:
+        block = 6 + 4 * severity
+        size = (max(1, height // block), max(1, width // block))
+        small = nn.functional.interpolate(images, size=size, mode="nearest-exact")
+        return nn.functional.interpolate(small, size=(height, width), mode="nearest-exact")
+    if family == 1:
+        sigma = 2.0 + 0.5 * severity
+        return gaussian_blur(images, [17, 17], [sigma, sigma])
+
+    scale = 0.09 + 0.025 * severity
+    size = (max(1, int(height * scale)), max(1, int(width * scale)))
+    small = nn.functional.interpolate(images, size=size, mode="bilinear",
+                                      align_corners=False, antialias=True)
+    return nn.functional.interpolate(small, size=(height, width), mode="bilinear",
+                                     align_corners=False)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--arch", required=True)
@@ -335,7 +367,9 @@ def main():
                               "only (val untouched); used for the data-scaling check")
     parser.add_argument("--sam", default="none", choices=["none", "sam"])
     parser.add_argument("--sam_rho", type=float, default=0.05)
-    parser.add_argument("--loss", default="bce", choices=["bce", "elr"])
+    parser.add_argument("--loss", default="bce", choices=["bce", "elr", "gce"])
+    parser.add_argument("--gce_warmup", type=int, default=2,
+                        help="number of initial BCE epochs before switching to GCE")
     parser.add_argument("--elr_lambda", type=float, default=3.0)
     parser.add_argument("--elr_beta", type=float, default=0.7)
     parser.add_argument("--struct_drop", default="none", choices=["none", "gridmask", "facecut"],
@@ -354,11 +388,25 @@ def main():
     parser.add_argument("--sbi_p", type=float, default=0.0,
                         help="probability of turning a real train image into a self-blended "
                              "pseudo-fake (label 1)")
+    parser.add_argument("--paired_target_mix", type=float, default=None,
+                        help="enable extra degraded views after epoch two; this share of "
+                             "their target comes from the detached anchor prediction (0 = labels only)")
     args = parser.parse_args()
     if args.loss == "elr" and args.mix != "none":
         parser.error("--loss elr cannot be combined with --mix")
     if args.sam == "sam" and args.loss == "elr":
         parser.error("--sam sam cannot be combined with --loss elr")
+
+    if args.loss == "gce" and not 0 <= args.gce_warmup < args.epochs:
+        parser.error("--gce_warmup must be nonnegative and less than --epochs")
+
+    if args.paired_target_mix is not None:
+        if not 0 <= args.paired_target_mix <= 1:
+            parser.error("--paired_target_mix must be between 0 and 1")
+        if args.epochs <= 2 or args.img_size < 17:
+            parser.error("paired views need more than two epochs and --img_size at least 17")
+        if args.loss != "bce" or args.mix != "none" or args.sam != "none" or args.trim_frac:
+            parser.error("paired views require BCE without mixing, SAM or trimming")
 
     set_seed(args.seed)
     os.makedirs(args.out_dir, exist_ok=True)
@@ -422,6 +470,8 @@ def main():
     global_step = 0
     run_start = time.time()
     for epoch in range(args.epochs):
+        use_gce = args.loss == "gce" and epoch >= args.gce_warmup
+        use_pairs = args.paired_target_mix is not None and epoch >= 2
         model.train()
         epoch_start = time.time()
         running_loss = 0.0
@@ -434,12 +484,26 @@ def main():
                 images, targets = mix_batch(images, targets, args.mix, args.mix_alpha)
             targets = smooth(targets)
 
+            if use_pairs:
+                pair_count = max(1, images.shape[0] // 2)
+                degraded = stronger_view(images[:pair_count], global_step)
+                paired_images = torch.cat((images, degraded), dim=0)
+
             optimizer.zero_grad(set_to_none=True)
 
             def compute_loss(update_elr=False):
                 with torch.autocast(device_type=device.type, enabled=use_amp):
+                    if use_pairs:
+                        anchor, extra = model(paired_images).squeeze(1).split(
+                            (len(images), pair_count))
+                        teacher = anchor[:pair_count].detach().float().sigmoid()
+                        extra_targets = targets[:pair_count].float().lerp(teacher, args.paired_target_mix)
+                        return (criterion(anchor, targets).mean()
+                                + 0.5 * criterion(extra, extra_targets).mean()) / 1.5
+
                     logits = model(images).squeeze(1)
-                    per_sample = criterion(logits, targets)
+                    per_sample = (generalized_cross_entropy(logits, targets)
+                                  if use_gce else criterion(logits, targets))
                     if update_elr:
                         per_sample = per_sample + args.elr_lambda * elr_reg(
                             logits, elr_targets, idx, args.elr_beta)

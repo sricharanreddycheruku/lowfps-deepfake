@@ -40,10 +40,14 @@ SUPPORTED_ARCHS = [
     "convnext_small_22k",
     "swin_small_22k",
     "effv2s_21k",
+    "dino_vits16",
 ]
 
 # timm weight tag and the input normalisation that backbone was pretrained with
 TIMM_ARCHS = {
+    # Original DINO (ViT-S/16), self-supervised on ImageNet-1k.
+    "dino_vits16": ("vit_small_patch16_224.dino",
+                    (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     "convnext_small_22k": ("convnext_small.fb_in22k_ft_in1k",
                            (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     "swin_small_22k": ("swin_small_patch4_window7_224.ms_in22k_ft_in1k",
