@@ -1,5 +1,5 @@
 # Production Deepfake Hackathon State Log
-Last updated: 2026-11-10 19:35 IST
+Last updated: 2026-11-11 00:35 IST
 
 ## 1. Executive Summary & Progression
 
@@ -21,7 +21,7 @@ Last updated: 2026-11-10 19:35 IST
 Every architecture evaluated across all 5 folds with 29 stress perturbations:
 
 | Architecture | Fold 0 Score | Fold 1 Score | Fold 2 Score | Fold 3 Score | Fold 4 Score | 5-Fold Mean Clean AUC | 5-Fold Mean Stress | 5-Fold Mean Score |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | **`maxvit_t`** | 0.89250 | 0.89533 | **0.90429** | 0.89970 | 0.88940 | **0.90425** | **0.88824** | **0.89625** |
 | **`cnxt_22k_sbi`** | 0.89515 | 0.89509 | 0.90100 | 0.89971 | 0.88895 | 0.90344 | 0.88852 | 0.89598 |
 | **`swin_22k_sbi`** | 0.89627 | 0.89193 | 0.89669 | 0.90010 | 0.88922 | 0.90380 | 0.88588 | 0.89484 |
@@ -49,27 +49,45 @@ Multi-scale spatial blending captures micro-textures and blend-boundary gradient
 
 ---
 
-## 4. Completed Waves 2 & 3 Checkpoint Summary (100% Full-Dataset Refits)
+## 4. Completed Waves 2, 3 & 4 Training Summary
 
-All jobs across Waves 2 & 3 completed successfully:
-1. **$256\times256$ Full Fits:** `convnext_base` (Seeds 42 & 7) on `sem8`, `convnext_small_22k_sbi` (Seeds 42 & 7) on `user7`.
-2. **20-Epoch Extended Convergence:** `swin_small_22k_sbi` & `maxvit_t_sbi` on `user8` (in-training score `0.9565`).
-3. **Architectural Diversity:** `effv2s_21k` (ImageNet-21k Fused-MBConv) on `sem8` (Seeds 42 & 7, in-training score `0.9686`).
-4. **Noise-Robust Loss:** `convnext_small_22k` & `swin_small_22k` with Generalized Cross-Entropy (GCE) on `user8`.
+All jobs across Waves 2, 3, and 4 converged successfully prior to decommissioning:
+1. **Wave 2 ($256\times256$ Full Fits):** `convnext_base` (Seeds 42 & 7) on `sem8`, `convnext_small_22k_sbi` (Seeds 42 & 7) on `user7`.
+2. **Wave 3 (Extended Convergence & Architecture Diversity):**
+   - 20-Epoch Extended Convergence: `swin_small_22k_sbi` & `maxvit_t_sbi` on `user8`.
+   - `effv2s_21k` (ImageNet-21k Fused-MBConv) on `sem8` (Seeds 42 & 7, in-training score `0.9686`).
+   - Noise-Robust Loss: `convnext_small_22k` & `swin_small_22k` with Generalized Cross-Entropy (GCE) on `user8`.
+3. **Wave 4 (Heavy Foundation Backbones & Deep Convergence):**
+   - `sem8`: `swin_base_22k` (88M parameters, ImageNet-22k) full-dataset fits across Seeds 42 and 7.
+   - `user7`: 20-epoch extended convergence on `maxvit_t_sbi` and `cnxt_base`.
+   - `user8`: 20-epoch extended convergence on `convnext_base_sbi`.
 
 ---
 
-## 5. Compute Node Status & Cluster Health
+## 5. SSH GPU Cluster Cleanup & Decommission Verification
 
-- **Node 1 (`sem8@172.16.121.36`):** RTX 4060 Ti 16 GB — IDLE (0% GPU, 16 GB VRAM free, 746 GB disk free).
-- **Node 2 (`user7@172.16.121.24`):** RTX 4060 Ti 16 GB — IDLE (0% GPU, 16 GB VRAM free, 33 GB disk free).
-- **Node 3 (`user8@172.16.121.19`):** RTX 4060 Ti 16 GB — IDLE (0% GPU, 16 GB VRAM free, 46 GB disk free).
+In accordance with strict user directives and security standards, all remote SSH GPU compute has been stopped and all project files have been safely wiped from remote machines with zero disruption to shared system or student files:
 
-All 3 nodes are 100% free and ready for the next parallel training phase.
+- **Node 1 (`sem8@172.16.121.36`):**
+  - Removed project directory: `/home/sem8/deepfake`
+  - Reclaimed disk space: **757 GB free** on `/dev/mapper/rhel-home`
+  - Active deepfake processes: **0**
+- **Node 2 (`user7@172.16.121.24`):**
+  - Removed project directory: `/home/user7/deepfake_work`
+  - Reclaimed disk space: **64 GB free** (~31 GB cleanly reclaimed)
+  - Active deepfake processes: **0**
+  - Verification: Other student environments (`iiit_deepfake_f93f3a5b9885`, `wp1-*`, `miniconda3`) untouched.
+- **Node 3 (`user8@172.16.121.19`):**
+  - Removed project directory: `/home/user8/deepfake_work`
+  - Reclaimed disk space: **94 GB free** (~48 GB cleanly reclaimed)
+  - Active deepfake processes: **0**
+  - Verification: Other student directories and system tools untouched.
+
+All logs and code updates were synchronized locally before directory deletion.
 
 ---
 
 ## 6. Security, Isolation & Submission Invariants
-- All compute on `user7` and `user8` is strictly isolated within `~/deepfake_work/`. Zero other files touched.
 - Submission baseline `E:\deepfake_ml_envs\submission_review\lowfps submission.zip` is completely intact and preserved.
 - Verified candidate weights `submission/v17_model_weights.pt` (1,180.4 MB) are secured.
+- Submission inference script and packaged model weights meet all evaluation criteria (<300s runtime, <15GB VRAM).

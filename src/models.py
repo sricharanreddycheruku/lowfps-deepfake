@@ -39,6 +39,7 @@ SUPPORTED_ARCHS = [
     "patch_b0",
     "convnext_small_22k",
     "swin_small_22k",
+    "swin_base_22k",
     "effv2s_21k",
     "dino_vits16",
 ]
@@ -52,6 +53,8 @@ TIMM_ARCHS = {
                            (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     "swin_small_22k": ("swin_small_patch4_window7_224.ms_in22k_ft_in1k",
                        (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+    "swin_base_22k": ("swin_base_patch4_window7_224.ms_in22k_ft_in1k",
+                      (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     "effv2s_21k": ("tf_efficientnetv2_s.in21k_ft_in1k",
                    (0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 }
