@@ -1,0 +1,36 @@
+{
+  "members": [
+    "v20_full_s42_swin22k",
+    "v20_full_s42_cnxt22k",
+    "v20_full_s42_maxvit",
+    "v20_full_s42_cnxt_base",
+    "v20_full_s7_swin22k",
+    "v20_full_s7_cnxt22k",
+    "v20_full_s7_maxvit",
+    "v20_full_s7_cnxt_base"
+  ],
+  "ckpts": [
+    "runs/swin22k_s42/fixed.pt",
+    "runs/cnxt22k_s42/fixed.pt",
+    "runs/maxvit_s42/fixed.pt",
+    "runs/cnxt_base_s42/fixed.pt",
+    "runs/swin22k_s7/fixed.pt",
+    "runs/cnxt22k_s7/fixed.pt",
+    "runs/maxvit_s7/fixed.pt",
+    "runs/cnxt_base_s7/fixed.pt"
+  ],
+  "fusion": "mean_logit",
+  "weights": [
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125
+  ],
+  "tta": true,
+  "threshold_policy": "fixed_0.5",
+  "threshold": 0.5
+}

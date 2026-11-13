@@ -30,13 +30,13 @@ from matplotlib.patches import FancyBboxPatch
 
 MEMBERS = [("final_resnet50", "ResNet-50"), ("e_cnxt_small", "ConvNeXt-Small"),
            ("final_swin_t", "Swin-T")]
-COLORS = ["#2b6cb0", "#c05621", "#2f855a"]
+COLORS = ["#2b6cb0", "#c05621", "#2f855a", "#6b46c1"]
 
 
 def draw_architecture(path):
-    fig, ax = plt.subplots(figsize=(9.0, 4.6))
+    fig, ax = plt.subplots(figsize=(9.0, 5.0))
     ax.set_xlim(0, 18)
-    ax.set_ylim(0, 9.6)
+    ax.set_ylim(0, 9.9)
     ax.axis("off")
 
     def box(x, y, w, h, text, fc="#edf2f7", ec="#4a5568", size=8.5):
@@ -48,21 +48,22 @@ def draw_architecture(path):
         ax.annotate("", xy=(x1, y1), xytext=(x0, y0),
                     arrowprops=dict(arrowstyle="->", color="#4a5568", lw=1.0))
 
-    mid = 4.8
+    mid = 4.95
     box(0.2, mid - 0.8, 2.6, 1.6, "224x224 face\nJPEG\nResize, ToTensor,\nImageNet normalise")
     box(3.7, mid - 0.8, 2.2, 1.6, "Original +\nhorizontal flip\n(2 passes)")
     arrow(2.9, mid, 3.65, mid)
-    names = ["ResNet-50 (23.5M)", "ConvNeXt-Small (49.5M)", "Swin-T (27.5M)"]
-    ys = [8.0 - 1.55 * i for i in range(6)]
+    names = ["Swin-S, IN-22k (48.8M)", "ConvNeXt-S, IN-22k (49.5M)", "MaxViT-T (30.4M)",
+             "ConvNeXt-Base (87.6M)"]
+    ys = [8.9 - 1.2 * i for i in range(8)]
     for i, y in enumerate(ys):
         col = COLORS[i // 2]
         seed = (42, 7)[i % 2]
-        box(7.0, y, 3.2, 1.1, f"{names[i // 2]}\nseed {seed}", fc="#ffffff", ec=col, size=8)
-        arrow(6.0, mid, 6.95, y + 0.55)
-        box(10.9, y + 0.1, 2.2, 0.9, "1 logit\n(Dropout + Linear)", size=7.5)
-        arrow(10.25, y + 0.55, 10.85, y + 0.55)
-        arrow(13.15, y + 0.55, 13.75, mid)
-    box(13.8, mid - 0.8, 2.2, 1.6, "Mean of\nlogits over\n6 members x\n2 views")
+        box(7.0, y, 3.2, 0.95, f"{names[i // 2]}\nseed {seed}", fc="#ffffff", ec=col, size=7.5)
+        arrow(6.0, mid, 6.95, y + 0.47)
+        box(10.9, y + 0.1, 2.2, 0.75, "1 logit\n(Dropout + Linear)", size=7)
+        arrow(10.25, y + 0.47, 10.85, y + 0.47)
+        arrow(13.15, y + 0.47, 13.75, mid)
+    box(13.8, mid - 0.8, 2.2, 1.6, "Mean of\nlogits over\n8 members x\n2 views")
     arrow(16.05, mid, 16.6, mid)
     box(16.6, mid - 0.8, 1.3, 1.6, "sigmoid\nP(fake)\n>= 0.5", size=8)
     fig.tight_layout(pad=0.2)

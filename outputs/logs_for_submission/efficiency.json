@@ -71,5 +71,32 @@
       "final_swin_t"
     ],
     "fusion": "mean_logit"
+  },
+  "t4_kaggle_v20": {
+    "gpu": "Tesla T4",
+    "torch": "2.11.0+cu128",
+    "timm": "1.0.29",
+    "ensemble": "v20, 8 members (swin_small_22k, convnext_small_22k, maxvit_t, convnext_base x seeds 42, 7), fp16 storage",
+    "weights": "randomly initialised, same architectures and file format",
+    "images": "3000 random-noise JPEGs 224x224",
+    "batch_size": 128,
+    "tta": "horizontal flip",
+    "runs": [
+      {
+        "run": "cold",
+        "wall_seconds": 202.1,
+        "in_script_seconds": 194.8,
+        "peak_vram_mib": 3756,
+        "rc": 0
+      },
+      {
+        "run": "second",
+        "wall_seconds": 205.0,
+        "in_script_seconds": 201.0,
+        "peak_vram_mib": 3756,
+        "rc": 0
+      }
+    ],
+    "gate_cold_under_240s": true
   }
 }

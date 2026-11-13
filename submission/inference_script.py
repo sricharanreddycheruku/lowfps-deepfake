@@ -1,9 +1,10 @@
 """Inference script for the Deepfake ML Hackathon submission.
 
-Loads the bundled ensemble (six members: ResNet-50, ConvNeXt-Small and Swin-T,
-two seeds each), runs every image in --test_dir through all members with a
-horizontal-flip TTA, fuses the logits as stored in the bundle and writes
-image_id,label,confidence.
+Loads the bundled ensemble (eight members: ConvNeXt-Small and Swin-Small with
+ImageNet-22k pretraining, MaxViT-T and ConvNeXt-Base, two seeds each), runs
+every image in --test_dir through all members with a horizontal-flip TTA,
+fuses the logits as stored in the bundle and writes image_id,label,confidence.
+The two ImageNet-22k backbones are built with timm, the others with torchvision.
 
     python inference_script.py \
         --test_dir ./test/images/ \
@@ -33,6 +34,27 @@ from torchvision import models, transforms
 
 IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png")
 
+# timm backbones (ImageNet-22k pretraining, fine-tuned on ImageNet-1k). Both
+# use ImageNet mean/std, so they share the preprocessing of the other members.
+TIMM_ARCHS = {
+    "convnext_small_22k": "convnext_small.fb_in22k_ft_in1k",
+    "swin_small_22k": "swin_small_patch4_window7_224.ms_in22k_ft_in1k",
+}
+
+
+class TimmNet(nn.Module):
+    """timm backbone (pooled features) + Dropout/Linear head, as in src/models.py."""
+
+    def __init__(self, arch, dropout=0.3):
+        super().__init__()
+        import timm
+
+        self.backbone = timm.create_model(TIMM_ARCHS[arch], pretrained=False, num_classes=0)
+        self.head = nn.Sequential(nn.Dropout(dropout), nn.Linear(self.backbone.num_features, 1))
+
+    def forward(self, x):
+        return self.head(self.backbone(x))
+
 
 def build_model(arch, dropout=0.3):
     """Same architectures as src/models.py, without pretrained weights.
@@ -40,10 +62,12 @@ def build_model(arch, dropout=0.3):
     def head(in_features):
         return nn.Sequential(nn.Dropout(dropout), nn.Linear(in_features, 1))
 
-    if arch in ("efficientnet_b0", "efficientnet_v2_s"):
+    if arch in TIMM_ARCHS:
+        model = TimmNet(arch, dropout)
+    elif arch in ("efficientnet_b0", "efficientnet_v2_s"):
         model = getattr(models, arch)(weights=None)
         model.classifier = head(model.classifier[-1].in_features)
-    elif arch in ("convnext_tiny", "convnext_small"):
+    elif arch in ("convnext_tiny", "convnext_small", "convnext_base", "maxvit_t"):
         model = getattr(models, arch)(weights=None)
         model.classifier[-1] = head(model.classifier[-1].in_features)
     elif arch == "swin_t":

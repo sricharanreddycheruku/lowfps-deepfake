@@ -12,19 +12,39 @@ Deadline: 15 Nov, with 14 Nov evening as our internal freeze.
 
 ## Where we stand
 
-The final system is the v11 bundle: six members (ResNet-50, ConvNeXt-Small and Swin-T at seeds 42 and 7), refit on all labelled rows with fixed stopping epochs (12, 9 for ConvNeXt-Small, 12), mean-logit fusion, flip TTA, threshold 0.5. It has no held-out score. Reported figures are from models trained on 80% of the data: the six-member set of the same recipe has fold-0 AUC 0.9075 clean, 0.9059 mean and 0.9010 worst of 23 variants (best-epoch checkpoints; fixed stopping cost 0.0006 clean on fold 0), and pixelate8 is 0.8562 (it was 0.7229 before the mosaic augmentation). Cross-check on folds 1 to 3 (recipe B, the shipped one, against recipe A, the older mosaic 0.15 recipe, seed 42 only; this is the final state of the run, which the deadline stopped before recipe B was scored on fold 4 and before any other seed): mean B is 0.9079 clean against 0.9073 for A, difference +0.0005 with a standard deviation of 0.0013, so no clean-AUC difference can be claimed; pixelate8 is 0.8476 against 0.8342 (+0.0133, sd 0.0060); worst-of-23 is 0.8976 against 0.8989 (-0.0013, sd 0.0019).
+**Final system: the v20 bundle.** It has eight members:
+- Swin-Small and ConvNeXt-Small with ImageNet-22k pretraining (timm), plus MaxViT-T and ConvNeXt-Base (torchvision), each at seeds 42 and 7.
+- Refit on all labelled rows with the 108 conflicting-label images dropped, using the weights after epoch 9 of 12.
+- Mean-logit fusion, flip TTA, threshold 0.5. Weights are stored in fp16.
 
-Where the bundle is. `model_weights.pt` (805 MB), `predictions.csv`, the TensorFlow export and the checks were copied from the GPU host (`outputs/v11_bundle`) after a sha256 check against the host manifest and are now in the local package. A clean-room run of the packaged script in a fresh Python 3.10 environment (torch 2.11.0, CPU) on the first 200 test images matched the shipped `predictions.csv` to 3.6e-4 with no label flips (CPU fp32 against the host's GPU fp16, so not byte-identical). Checks done on the host: a repeat run is identical (maximum confidence difference 0, no label flips), the Spearman correlation with the previous bundle's test predictions is 0.9846 (a broken-model check only), the format check passed, and the TensorFlow export has parity 3.0e-07 on 500 validation images and 6.8e-04 against `predictions.csv` on the test set with no label flips. The status log recorded exit code 1 for the bundle step because `src/bundle.py` writes the file and then asserts that it is under 500 MB, a limit left over from the three-member bundle (this one is 805 MB; the organisers allow 5 GB). The save had completed, so the weights are complete, and the later steps (inference, repeat run, TensorFlow export and parity) all loaded and used the six members. The post-save reload and `--verify` checks of `bundle.py` did not run for this bundle. The current source uses a 5 GB size limit.
+The bundle has no held-out score. The evidence is a five-fold cross-validation of the same four architectures and recipe, where each image is scored by the fold models that did not see it. Pooled over the 7,000 labelled images, AUC is:
+- 0.9080 clean (95% group-bootstrap interval 0.9010 to 0.9155)
+- 0.9068 mean and 0.9018 worst over the 22 degraded default views
+- 0.8615 on 8 px pixelation
+- accuracy 0.872 at 0.5
 
-Efficiency. The three-member bundle was timed on a Kaggle T4 (56 s warm, 93 s cold). The six-member bundle was timed on a Kaggle T4 too: 88.6 s cold wall, 86.9 s second run, peak 2,229 MiB, so the registered gate (under 240 s cold) is met. That run used random weights of the same architectures and format and noise JPEGs, since run time does not depend on weight values. The 305 s host run used a shared GPU and does not count.
+The ship rule was written to `outputs/ablations/v20/v20_prereg.json` before these numbers were computed, and every check passed. On folds 0 and 4 the new set is ahead of the v11 recipe on every summary. The architectures were shortlisted after looking at folds 0 and 4, so the pooled figure is mildly optimistic. `python src/verify_results.py` recomputes the pooled table from the saved logits.
+
+**Checks on the training host.**
+- Two inference runs gave byte-identical `predictions.csv` (101 s each on an RTX 4060 Ti), and the format check passed.
+- The Spearman correlation with the v11 test predictions is 0.9724 (a broken-model gate, at least 0.95, never used to choose).
+- fp16 storage changes the confidences by at most 4.5e-4 against the fp32 bundle, with no label flip.
+- `python -m unittest discover -s tests` passes (10 tests).
+
+**Efficiency.** On a Kaggle Tesla T4 the v20 bundle took 202.1 s cold (194.8 s in the script) and 205.0 s on a second run, peak GPU memory 3,756 MiB. That is under the registered 240 s gate and the 5-minute budget. The v11 six-member bundle took 88.6 s cold on a T4.
+
+**Previous system (v11).** Six members (ResNet-50, ConvNeXt-Small and Swin-T at seeds 42 and 7). Fold-0 AUC was 0.9075 clean and pixelation 0.8562. The Grad-CAM figures and the TensorFlow export in this package are of v11 members, not v20 members; see sections 8 and 9 of the technical report.
+
+**Clean-room check.** A fresh Python 3.10 environment was created and only `requirements.txt` was installed (torch 2.11.0, torchvision 0.26.0, timm 1.0.31). In it, the shipped script was run with the shipped weights on the first 200 test images. The confidences match `predictions.csv` to within 1.1e-4 with no label flip; the small difference comes from the different batch composition.
 
 ## What is in this zip
 
-- `source_code.zip`: all code, with `README.md` containing the exact commands
-- `model_weights.pt`: the shipped weights (805 MB for the six-member bundle)
+- `source_code.zip`: all code, with `README.md` containing the exact commands, plus the unit tests in `tests/`
+- `model_weights.pt`: the shipped weights (867 MB, eight members in fp16)
 - `technical_report.pdf` and `report.pdf`: what was tried and why
-- `predictions.csv`: the current test predictions
-- `gradcam/`: Grad-CAM figures and notes
+- `predictions.csv`: the test predictions of the shipped weights
+- `tf_model/`: the TensorFlow export of the v11 system
+- `gradcam/`: Grad-CAM figures and notes (v11 members)
 - `HANDOFF.md`: this file
 
 The dataset is not included. Get it from the organisers to retrain.
@@ -32,45 +52,46 @@ The dataset is not included. Get it from the organisers to retrain.
 ## Setup
 
 1. Use Python 3.10 and unzip `source_code.zip`.
-2. Install `requirements-train.txt`. It pins CPU wheels, so install the CUDA build of torch and torchvision instead if you have a GPU.
+2. Install `requirements-train.txt`. It pins CPU wheels, so install the CUDA build of torch and torchvision instead if you have a GPU. `timm` is needed for the ImageNet-22k members.
 3. Put the dataset at `data/raw/hackathon_dataset/` (`train/{real,fake}`, `test/images`, `train_metadata.csv`).
-4. Run the commands in `README.md` in this order: `inspect_data`, `find_duplicates`, `make_split`, `train`, `robust_eval`, `ensemble`, `bundle`.
-5. Kaggle's free T4 is enough for single-model runs of 12 epochs.
+4. Run the commands in `README.md` in this order: `inspect_data`, `find_duplicates`, `make_split`, `train`, `bundle`, then the inference script.
+5. One v20 member takes 12 to 19 minutes for 12 epochs on an RTX 4060 Ti; a Kaggle T4 is slower but enough.
 
 ## How the code is organised
 
-- `src/make_split.py` builds `data/splits/split_v1.csv`. Near-duplicate groups never straddle train and val. Every script uses this one split, so keep it.
+- `src/make_split.py` builds `data/splits/split_v1.csv` and the other fold files. Near-duplicate groups never straddle train and val. Every script uses these splits, so keep them.
 - `src/models.py` builds each backbone as `(N,3,H,W)` to `(N,1)` logits.
-- `src/train.py` trains with EMA weights, and `src/robust_eval.py` runs the 23-variant degradation suite.
-- `src/ensemble.py` and `src/bundle.py` build `model_weights.pt`.
+- `src/augment.py` holds the augmentations, including mosaic and Self-Blended Images.
+- `src/train.py` trains with EMA weights and optional paired consistency.
+- `src/robust_eval.py` runs the degradation suites.
+- `src/bundle.py` builds `model_weights.pt`.
 - `submission/inference_script.py` must keep the CLI `--test_dir --weights --output`.
 
-## Already tried, with no gain beyond seed noise (about 0.003 AUC)
+## Already tried, with no gain beyond seed noise (about 0.003 AUC) on fold 0
 
-- Backbones: ConvNeXt-Base, Swin-S (12 and 22 epochs), EfficientNetV2-S, RegNet-Y-16GF, MaxViT-T, ViT-B/16. Swin-V2-T did not train at the learning rates tried.
+- On fold 0 against the v1 to v6 bundles: ConvNeXt-Base, Swin-S, EfficientNetV2-S, RegNet-Y-16GF, MaxViT-T and ViT-B/16 as add-on members. Several of these later helped in the v20 recipe, with paired consistency, mosaic and five folds of evidence. Swin-V2-T did not train at the learning rates tried.
 - Layer-wise learning-rate decay, dropping high-loss samples, more seeds, and rank-mean fusion.
-- The pre-registered v5 round (E1-E9; the union candidate E10 was not scored): SRM-noise and DCT-input members, SAM, an early-learning-regularisation loss, GridMask and FaceCut, a centre-crop TTA view, logistic stacking and a patch-level member. None met the switching rule; see section 5 of the technical report.
-- The best alternative was 3 ConvNeXt-Small seeds + Swin-S, at about +0.002 clean and +0.0035 worst-variant AUC. Its 95% bootstrap interval includes zero.
-- The pre-registered v6 round: ImageNet-22k/21k backbones, Self-Blended Images, confident-learning label cleaning and a five-fold ensemble simulated on fold 0. No lever passed the screen; the simulated ensemble and its fallback both failed the switch rule (clean -0.0029 and -0.0014). Full five-fold training was not run. See report section 5.
+- The pre-registered v5 round: SRM-noise and DCT-input members, SAM, an early-learning-regularisation loss, GridMask and FaceCut, a centre-crop TTA view, logistic stacking and a patch-level member. None met the switching rule.
+- The pre-registered v6 round: ImageNet-22k/21k backbones and Self-Blended Images as single-model swaps, confident-learning label cleaning, and a simulated five-fold ensemble. None passed on fold 0.
+- v9 and v10: heavy blur, downscale and noise augmentation. These lowered clean AUC.
+- A DINO ViT-S/16 member (set C in v20). It lowered the pooled scores slightly.
 - About 12% of validation images get confidently wrong answers, which looks like label noise.
-
-- The pixelation rounds. v7 (mosaic augmentation 0.15) and v8 (probability 0.5, the winner) passed; v9 (heavy blur, downscale and noise augmentation) and v10 (heavy augmentation on top of mosaic 0.5, a second seed) found no candidate that passed. Details are in section 5 of the technical report.
 
 ## Ideas not yet tried
 
 - Relabelling (not dropping) the confident-error cases; dropping them was tried in v6
 - Higher-resolution face crops (the 288px test did not help, so test this carefully)
-- Better use of the conflicting-label groups (the final recipe drops them from training)
+- Grad-CAM maps and a TensorFlow export of the v20 members
 
 ## Rules that disqualify us if broken
 
 - Train only on the provided dataset. ImageNet-pretrained backbones are fine, but deepfake-specific detectors are not.
 - Never use test images for training in any form, including pseudo-labels or statistics computed on them.
 - The inference script must reproduce `predictions.csv` and contain no hardcoded paths.
-- Compare any new model on the same `split_v1` val fold. Switch the ensemble only if it gains at least 0.004 on both clean and worst-variant AUC, the 95% paired-bootstrap interval of each gain stays above zero, and the T4 time stays under 150 s.
+- Register any new switching rule before scoring, and compare on pooled five-fold out-of-fold logits with the same splits.
 
 ## Known limits
 
-- The earlier three-member `tf_model/` is the reproducible export from `src/export_tf.py`: ResNet-50 and ConvNeXt-Small go through onnx2tf and Swin-T is rebuilt directly in TensorFlow ops (fixed batch 16). Parity on 500 validation images: 4.2e-07 in confidence. `inference_script_tf.py` on the 3,000 test images (CPU host, batch 64): 5 min 49 s, passes `check_predictions.py`, max confidence difference to `predictions.csv` 1.9e-03, one label flip.
-- The TensorFlow path has not been timed on a T4. The final six-member TensorFlow export passes parity (all six members converted) but its speed is unmeasured.
-- The final weights cannot be scored on our data, so the expected gain from the refit (about +0.003 to +0.005 clean AUC) is an extrapolation from fold-0 learning curves.
+- The TensorFlow path covers the v11 members only and has not been timed on a T4. The six-member v11 export passes parity at 3.0e-07 on 500 validation images.
+- The final weights cannot be scored on our data. The gain from the refit and from the second seed is not measured.
+- Coarse pixelation remains the weakest degradation (24 px: 0.734 pooled).

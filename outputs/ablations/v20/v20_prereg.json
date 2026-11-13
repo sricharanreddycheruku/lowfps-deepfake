@@ -1,0 +1,94 @@
+{
+ "round": "v20",
+ "written": "2026-11-12, before any pooled out-of-fold number for these sets was computed",
+ "question": "Does a four-architecture ensemble (ImageNet-22k ConvNeXt-S and Swin-S with self-blended images, MaxViT-T, ConvNeXt-Base) beat the shipped v11 recipe strongly enough to retrain it on all labelled rows and ship it?",
+ "data": "Per-image validation logits in outputs/ablations/v14/fold{0..4}/<run>/validation_logits.npz. Each fold model was trained on the other four folds of split_v1 (fold 0 = split_v1.csv, fold k = split_v1_fold{k}.csv). Pooled over folds this covers all 7,000 labelled images once.",
+ "runs_per_fold": {
+  "cnxt22k": "cnxt_22k_sbi (all folds)",
+  "swin22k": "swin_22k_sbi (all folds)",
+  "maxvit": "maxvit_t on folds 1-3, maxvit_t_consistency on folds 0 and 4 (same recipe family, the only MaxViT runs there)",
+  "cnxt_base": "cnxt_base (all folds)",
+  "dino": "dino_sbi (all folds)"
+ },
+ "sets": {
+  "A": [
+   "cnxt22k",
+   "swin22k",
+   "maxvit",
+   "cnxt_base"
+  ],
+  "B": [
+   "cnxt22k",
+   "swin22k",
+   "maxvit"
+  ],
+  "C": [
+   "cnxt22k",
+   "swin22k",
+   "maxvit",
+   "cnxt_base",
+   "dino"
+  ]
+ },
+ "fusion": "Equal-weight mean of member logits. Clean score uses flip TTA: mean of the clean and hflip logits. Degraded views are scored without TTA (only the unflipped degraded view was cached), which is conservative.",
+ "metrics": "Pooled ROC AUC over 7,000 images: clean (flip TTA), accuracy at probability 0.5, mean and worst over the 22 non-clean views of the default suite, pixelate8, extended-suite mean, stress-suite mean. 1,000 bootstrap draws resampling near-duplicate groups for 95% intervals.",
+ "selection": "Pick the set with the highest (clean + default-suite mean) / 2.",
+ "ship_rule": "Retrain and ship the selected set only if (1) its pooled clean AUC >= 0.9052 (the teammate's published pooled out-of-fold clean AUC with flip TTA) and (2) on folds 0 and 4, where the v11-recipe trio (control ResNet-50, cnxt_small, swin_t) has cached logits, the selected set is no worse than that trio by more than 0.003 in clean AUC and in pixelate8 AUC, on each fold. A measured T4 cold time under 240 s for the refit bundle is checked later. Otherwise keep v11.",
+ "caveat": "The architectures were shortlisted after looking at folds 0 and 4, so the pooled score is mildly optimistic. Folds 1-3 were not used for shortlisting.",
+ "results": {
+  "computed": "2026-11-12, outputs/ablations/v20/pooled_oof.py -> pooled_oof.json",
+  "selected": "A",
+  "ship": true,
+  "checks": {
+   "pooled_clean_vs_teammate": true,
+   "fold0_clean_tta_non_inferior": true,
+   "fold0_pixelate8_non_inferior": true,
+   "fold4_clean_tta_non_inferior": true,
+   "fold4_pixelate8_non_inferior": true
+  },
+  "set_A_pooled": {
+   "clean_tta": 0.908030243807184,
+   "clean_tta_ci95": [
+    0.9009897550894018,
+    0.9155088391105222
+   ],
+   "accuracy_tta": 0.8715714285714286,
+   "default_mean": 0.9068097187750852,
+   "default_worst": 0.901775629339151,
+   "pixelate8": 0.861549631838515,
+   "pixelate8_ci95": [
+    0.8530596992197147,
+    0.8705440104444906
+   ],
+   "extended_mean": 0.8965363377855675,
+   "stress_mean": 0.8612809409503746,
+   "per_fold_clean_tta": [
+    0.9074315107193595,
+    0.904330641837007,
+    0.9120509539898639,
+    0.9150591697835551,
+    0.9037613275998316
+   ]
+  },
+  "selection_scores": {
+   "A": 0.9074199812911345,
+   "B": 0.9073637044850663,
+   "C": 0.9066405738732117
+  },
+  "note": "A and B differ by 0.00005 in selection score; A is selected by the rule. ConvNeXt-Base alone pools poorly (0.8815) because its per-fold scores are on different scales, yet it does not hurt the ensemble.",
+  "erratum": "The fusion note says degraded views were cached without TTA. They were not: outputs/ablations/v14/score_views.py scores every view, clean and degraded, as the mean of the unflipped and flipped logits, which is why the cached clean and hflip views are identical. All pooled figures are therefore flip-TTA scores, as at inference; clean_no_tta equals clean_tta for this reason."
+ },
+ "refit_gates": {
+  "written": "2026-11-12, while the full-data refit was training and before any v20 test prediction existed",
+  "runs": "swin_small_22k (SBI 0.15), convnext_small_22k (SBI 0.15), maxvit_t, convnext_base (bs 32), seeds 42 and 7, fold recipe with --all_data, fixed.pt after epoch 9 of 12",
+  "bundle": "8 members, equal-weight mean logit, flip TTA, threshold 0.5 (the operating point of the pooled out-of-fold accuracy)",
+  "gates": [
+   "every training log finite with falling loss",
+   "Spearman rank correlation between v20 and shipped v11 test confidences >= 0.95",
+   "a second inference run gives a byte-identical predictions.csv",
+   "src/check_predictions.py passes",
+   "Kaggle T4 cold run under 240 s; otherwise drop one seed of the slowest architecture and re-time"
+  ],
+  "gate_note": "The plan first said 0.97. On out-of-fold logits of folds 0 and 4 the v11 trio and set A, both healthy, correlate at 0.9667 and 0.9628, so 0.97 would reject a sound model. The gate only has to catch a broken refit, so it is set at 0.95 from validation data alone."
+ }
+}

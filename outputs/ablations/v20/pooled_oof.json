@@ -1,0 +1,264 @@
+{
+ "n_images": 7000,
+ "members": {
+  "cnxt22k": {
+   "clean_tta": 0.9032907912443234,
+   "clean_no_tta": 0.9032907912443234,
+   "accuracy_tta": 0.8608571428571429,
+   "default_mean": 0.9019507216003102,
+   "default_worst": 0.89617846941871,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8553075484778337,
+   "extended_mean": 0.8886616826330117,
+   "stress_mean": 0.8528301263313405,
+   "pixelate24": 0.7168501596307968
+  },
+  "swin22k": {
+   "clean_tta": 0.9034911665081298,
+   "clean_no_tta": 0.9034911665081298,
+   "accuracy_tta": 0.8552857142857143,
+   "default_mean": 0.901542063524647,
+   "default_worst": 0.892946341716685,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8291333306556765,
+   "extended_mean": 0.8870515140586546,
+   "stress_mean": 0.8436945499633527,
+   "pixelate24": 0.713252221557162
+  },
+  "maxvit": {
+   "clean_tta": 0.9045817810271035,
+   "clean_no_tta": 0.9045817810271035,
+   "accuracy_tta": 0.8697142857142857,
+   "default_mean": 0.9035709266167966,
+   "default_worst": 0.8996910979993006,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8549938626146536,
+   "extended_mean": 0.8919571889324327,
+   "stress_mean": 0.8523511051375416,
+   "pixelate24": 0.7119185362099204
+  },
+  "cnxt_base": {
+   "clean_tta": 0.8814879298088186,
+   "clean_no_tta": 0.8814879298088186,
+   "accuracy_tta": 0.7897142857142857,
+   "default_mean": 0.8796114864679331,
+   "default_worst": 0.8716699908796396,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8214507005827822,
+   "extended_mean": 0.8633809170209548,
+   "stress_mean": 0.8240130784668463,
+   "pixelate24": 0.6962344063226661
+  },
+  "dino": {
+   "clean_tta": 0.8614667306038868,
+   "clean_no_tta": 0.8614667306038868,
+   "accuracy_tta": 0.7804285714285715,
+   "default_mean": 0.8574163720576238,
+   "default_worst": 0.8360935648396229,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.7440785415521723,
+   "extended_mean": 0.8312330171132594,
+   "stress_mean": 0.7769432459390413,
+   "pixelate24": 0.6794949694338943
+  }
+ },
+ "sets": {
+  "A": {
+   "clean_tta": 0.908030243807184,
+   "clean_no_tta": 0.908030243807184,
+   "accuracy_tta": 0.8715714285714286,
+   "default_mean": 0.9068097187750852,
+   "default_worst": 0.901775629339151,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.861549631838515,
+   "extended_mean": 0.8965363377855675,
+   "stress_mean": 0.8612809409503746,
+   "pixelate24": 0.7339719789745163,
+   "clean_tta_ci95": [
+    0.9009897550894018,
+    0.9155088391105222
+   ],
+   "pixelate8_ci95": [
+    0.8530596992197147,
+    0.8705440104444906
+   ],
+   "selection_score": 0.9074199812911345,
+   "per_fold_clean_tta": [
+    0.9074315107193595,
+    0.904330641837007,
+    0.9120509539898639,
+    0.9150591697835551,
+    0.9037613275998316
+   ]
+  },
+  "B": {
+   "clean_tta": 0.9079352604625359,
+   "clean_no_tta": 0.9079352604625359,
+   "accuracy_tta": 0.8707142857142857,
+   "default_mean": 0.9067921485075967,
+   "default_worst": 0.9016263173173535,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8617426190553161,
+   "extended_mean": 0.8966445752982054,
+   "stress_mean": 0.8609395487770928,
+   "pixelate24": 0.7311049269211942,
+   "clean_tta_ci95": [
+    0.9007328332699132,
+    0.9157039925357486
+   ],
+   "pixelate8_ci95": [
+    0.8529661797123721,
+    0.8706608766784235
+   ],
+   "selection_score": 0.9073637044850663,
+   "per_fold_clean_tta": [
+    0.9072458591631151,
+    0.9043437760157772,
+    0.912033356520587,
+    0.9132707911786948,
+    0.9032584488757069
+   ]
+  },
+  "C": {
+   "clean_tta": 0.9072795202683926,
+   "clean_no_tta": 0.9072795202683926,
+   "accuracy_tta": 0.8692857142857143,
+   "default_mean": 0.9060016274780309,
+   "default_worst": 0.9005911743778285,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8594055471252905,
+   "extended_mean": 0.8956902926963458,
+   "stress_mean": 0.8595012062335995,
+   "pixelate24": 0.732883201262809,
+   "clean_tta_ci95": [
+    0.9002001662683832,
+    0.9148191121983462
+   ],
+   "pixelate8_ci95": [
+    0.8508057030016603,
+    0.8685401541905027
+   ],
+   "selection_score": 0.9066405738732117,
+   "per_fold_clean_tta": [
+    0.9084455314477593,
+    0.9015078037228323,
+    0.9111431316042267,
+    0.914563533427351,
+    0.9044807520602635
+   ]
+  }
+ },
+ "fold_check": {
+  "fold0": {
+   "v11_trio": {
+    "clean_tta": 0.9070410370657368,
+    "clean_no_tta": 0.9070410370657368,
+    "accuracy_tta": 0.8721590909090909,
+    "default_mean": 0.905589120818804,
+    "default_worst": 0.9001810102673381,
+    "default_worst_view": "downscale_0.25",
+    "pixelate8": 0.858425553725946,
+    "extended_mean": 0.8953200529049281,
+    "stress_mean": 0.85092505148019,
+    "pixelate24": 0.7216033837014076
+   },
+   "A": {
+    "clean_tta": 0.9074315107193595,
+    "clean_no_tta": 0.9074315107193595,
+    "accuracy_tta": 0.875,
+    "default_mean": 0.9072485191903539,
+    "default_worst": 0.9048919185070387,
+    "default_worst_view": "brightness_plus30",
+    "pixelate8": 0.8676687814800466,
+    "extended_mean": 0.8986185390952196,
+    "stress_mean": 0.8643738026819923,
+    "pixelate24": 0.7280931163631668
+   },
+   "B": {
+    "clean_tta": 0.9072458591631151,
+    "clean_no_tta": 0.9072458591631151,
+    "accuracy_tta": 0.8742897727272727,
+    "default_mean": 0.9068715749856174,
+    "default_worst": 0.9048222991734469,
+    "default_worst_view": "noise_std20",
+    "pixelate8": 0.862525022601059,
+    "extended_mean": 0.8974484153890149,
+    "stress_mean": 0.8618575290226297,
+    "pixelate24": 0.7229372497739894
+   },
+   "C": {
+    "clean_tta": 0.9084455314477593,
+    "clean_no_tta": 0.9084455314477593,
+    "accuracy_tta": 0.8707386363636364,
+    "default_mean": 0.907761766859803,
+    "default_worst": 0.905555824615782,
+    "default_worst_view": "brightness_plus30",
+    "pixelate8": 0.867260146261139,
+    "extended_mean": 0.8992612567111308,
+    "stress_mean": 0.8635140431500853,
+    "pixelate24": 0.7282384088854449
+   }
+  },
+  "fold4": {
+   "v11_trio": {
+    "clean_tta": 0.8971869579942322,
+    "clean_no_tta": 0.8971869579942322,
+    "accuracy_tta": 0.8560171919770774,
+    "default_mean": 0.8960213802761449,
+    "default_worst": 0.8882788205954494,
+    "default_worst_view": "downscale_0.25",
+    "pixelate8": 0.8363796836995453,
+    "extended_mean": 0.882504951816008,
+    "stress_mean": 0.8423227751607558,
+    "pixelate24": 0.734904914869816
+   },
+   "A": {
+    "clean_tta": 0.9037613275998316,
+    "clean_no_tta": 0.9037613275998316,
+    "accuracy_tta": 0.8531518624641834,
+    "default_mean": 0.9023076442230992,
+    "default_worst": 0.8969324397828384,
+    "default_worst_view": "downscale_0.25",
+    "pixelate8": 0.8559447449173329,
+    "extended_mean": 0.8904996972464824,
+    "stress_mean": 0.8596416447441191,
+    "pixelate24": 0.7513316023358204
+   },
+   "B": {
+    "clean_tta": 0.9032584488757069,
+    "clean_no_tta": 0.9032584488757069,
+    "accuracy_tta": 0.8545845272206304,
+    "default_mean": 0.9016072526494433,
+    "default_worst": 0.8966799741376656,
+    "default_worst_view": "downscale_0.25",
+    "pixelate8": 0.85558041441312,
+    "extended_mean": 0.8898754238915776,
+    "stress_mean": 0.8581066673052429,
+    "pixelate24": 0.7468693233715453
+   },
+   "C": {
+    "clean_tta": 0.9044807520602635,
+    "clean_no_tta": 0.9044807520602635,
+    "accuracy_tta": 0.8510028653295129,
+    "default_mean": 0.9028822228172589,
+    "default_worst": 0.8963679840720862,
+    "default_worst_view": "downscale_0.25",
+    "pixelate8": 0.8562885497593365,
+    "extended_mean": 0.8914454904387067,
+    "stress_mean": 0.8596727753318031,
+    "pixelate24": 0.7501626658730077
+   }
+  }
+ },
+ "decision": {
+  "selected": "A",
+  "checks": {
+   "pooled_clean_vs_teammate": true,
+   "fold0_clean_tta_non_inferior": true,
+   "fold0_pixelate8_non_inferior": true,
+   "fold4_clean_tta_non_inferior": true,
+   "fold4_pixelate8_non_inferior": true
+  },
+  "ship": true
+ }
+}
