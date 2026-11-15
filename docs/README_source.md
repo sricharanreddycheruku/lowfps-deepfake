@@ -1,6 +1,6 @@
 # Deepfake ML Hackathon - team lowfps
 
-Binary classifier for 224x224 aligned face JPEGs (0 = real, 1 = fake), scored by ROC-AUC on `confidence` = P(fake). The submitted system is an ensemble of eight members: Swin-Small and ConvNeXt-Small with ImageNet-22k pretraining (timm), MaxViT-T and ConvNeXt-Base (torchvision), each at seeds 42 and 7. All are ImageNet-pretrained backbones fine-tuned on the provided training set only. The members are refit on all labelled images with a fixed stopping epoch, and fused by the mean of logits with horizontal-flip test-time augmentation. The refit has no held-out score. In five-fold cross-validation of the same four architectures and recipe, every labelled image is scored by models that never saw it: pooled over all 7,000 images, AUC is 0.9080 clean (95% interval 0.9010 to 0.9155), 0.9068 averaged over 22 degradation variants, 0.9018 on the worst variant and 0.8615 on 8 px pixelation. The selection rule was registered before these numbers were computed (technical report, section 5). On a Kaggle Tesla T4 the eight-member bundle takes 202.1 s cold for the 3,000 test images (194.8 s inside the script), under the 5-minute budget. On the RTX 4060 Ti they take 101 s. Grad-CAM and the TensorFlow export cover the previous six-member system (v11), not the final one. Details are in `technical_report.pdf`.
+Binary classifier for 224x224 aligned face JPEGs (0 = real, 1 = fake), scored by ROC-AUC on `confidence` = P(fake). The submitted system is an ensemble of eight members: Swin-Small and ConvNeXt-Small with ImageNet-22k pretraining (timm), MaxViT-T and ConvNeXt-Base (torchvision), each at seeds 42 and 7. All are ImageNet-pretrained backbones fine-tuned on the provided training set only. The members are refit on all labelled images with a fixed stopping epoch, and fused by the mean of logits with horizontal-flip test-time augmentation. The refit has no held-out score. In five-fold cross-validation of the same four architectures and recipe, every labelled image is scored by models that never saw it: pooled over all 7,000 images, AUC is 0.9080 clean (95% interval 0.9010 to 0.9155), 0.9068 averaged over 22 degradation variants, 0.9018 on the worst variant and 0.8615 on 8 px pixelation. The selection rule was registered before these numbers were computed (technical report, section 5). On a Kaggle Tesla T4 the eight-member bundle takes 202.1 s cold for the 3,000 test images (194.8 s inside the script), under the 5-minute budget. On the RTX 4060 Ti they take 101 s. Grad-CAM figures are of the shipped eight-member bundle; the TensorFlow export covers the previous six-member system (v11), not the final one. Details are in `technical_report.pdf`.
 
 ## Folder structure
 
@@ -171,10 +171,15 @@ Optional arguments: `--batch_size` (default 128), `--threshold` (default: the bu
 python submission/inference_script_tf.py --test_dir data/raw/hackathon_dataset/test/images --weights tf_model --output predictions_tf.csv
 ```
 
-9. Grad-CAM figures (validation images, per member and ensemble) and TensorFlow export. Both were made from v11 bundles: the Grad-CAM figures from the v11 fold-0 bundle, since refit members have seen every validation image, and the TF export from the v11 refit bundle. `<v11 bundle>` below is that file; it is not part of this submission:
+9. Grad-CAM figures (validation images, per member and ensemble) of the shipped bundle. The refit members have seen these images in training, so the maps show where the deployed model looks, not held-out behaviour:
 
 ```
-python src/gradcam.py --weights <v11 bundle> --split_csv data/splits/split_v1.csv --out outputs/figures
+python src/gradcam.py --weights submission/model_weights.pt --split_csv data/splits/split_v1.csv --out outputs/figures
+```
+
+   TensorFlow export. It was made from the v11 refit bundle; `<v11 bundle>` below is that file, and it is not part of this submission:
+
+```
 python src/export_tf.py --weights <v11 bundle> --out tf_model --work work_tf
 python src/export_tf.py --parity --weights <v11 bundle> --out tf_model --split_csv data/splits/split_v1.csv --n 500 --parity_json outputs/eval/tf_parity.json
 ```

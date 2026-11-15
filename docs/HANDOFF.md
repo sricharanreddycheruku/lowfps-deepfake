@@ -33,9 +33,9 @@ The ship rule was written to `outputs/ablations/v20/v20_prereg.json` before thes
 
 **Efficiency.** On a Kaggle Tesla T4 the v20 bundle took 202.1 s cold (194.8 s in the script) and 205.0 s on a second run, peak GPU memory 3,756 MiB. That is under the registered 240 s gate and the 5-minute budget. The v11 six-member bundle took 88.6 s cold on a T4.
 
-**Previous system (v11).** Six members (ResNet-50, ConvNeXt-Small and Swin-T at seeds 42 and 7). Fold-0 AUC was 0.9075 clean and pixelation 0.8562. The Grad-CAM figures and the TensorFlow export in this package are of v11 members, not v20 members; see sections 8 and 9 of the technical report.
+**Previous system (v11).** Six members (ResNet-50, ConvNeXt-Small and Swin-T at seeds 42 and 7). Fold-0 AUC was 0.9075 clean and pixelation 0.8562. The TensorFlow export in this package is of v11 members, not v20 members (technical report, section 9). The Grad-CAM figures are of the shipped v20 bundle (section 8).
 
-**Clean-room check.** A fresh Python 3.10 environment was created and only `requirements.txt` was installed (torch 2.11.0, torchvision 0.26.0, timm 1.0.31). In it, the shipped script was run with the shipped weights on the first 200 test images. The confidences match `predictions.csv` to within 1.1e-4 with no label flip; the small difference comes from the different batch composition.
+**Clean-room check.** A fresh Python 3.10 environment was created and only `requirements.txt` was installed (torch 2.11.0, torchvision 0.26.0, timm 1.0.31). In it, the shipped script was run on CPU with the shipped weights on the first 64 sorted test images. The confidences match `predictions.csv` to within 4.3e-4 (mean 3.3e-5) with no label flip; the small difference comes from CPU fp32 against GPU fp16.
 
 ## What is in this zip
 
@@ -44,7 +44,7 @@ The ship rule was written to `outputs/ablations/v20/v20_prereg.json` before thes
 - `technical_report.pdf` and `report.pdf`: what was tried and why
 - `predictions.csv`: the test predictions of the shipped weights
 - `tf_model/`: the TensorFlow export of the v11 system
-- `gradcam/`: Grad-CAM figures and notes (v11 members)
+- `gradcam/`: Grad-CAM figures and notes (v20 bundle members)
 - `HANDOFF.md`: this file
 
 The dataset is not included. Get it from the organisers to retrain.

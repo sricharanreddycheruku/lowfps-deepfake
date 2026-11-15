@@ -1,5 +1,5 @@
 {
-  "note": "Local runs below were measured on an NVIDIA GeForce RTX 4060 Ti (16 GB), not a T4. The real Tesla T4 measurement is in 't4_kaggle'.",
+  "note": "Local runs below were measured on an NVIDIA GeForce RTX 4060 Ti (16 GB), not a T4. The Tesla T4 measurement of the shipped eight-member v20 bundle is in 't4_kaggle_v20' (202.1 s cold). The top-level 'ensemble' and 'runs' fields and 't4_kaggle' (93.1 s) are of the earlier three-member system.",
   "gpu": "NVIDIA GeForce RTX 4060 Ti",
   "host_cpu_threads": 24,
   "torch": "2.11.0",

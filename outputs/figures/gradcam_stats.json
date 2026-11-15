@@ -8,616 +8,769 @@
     "fn": 16
   },
   "stats": {
-    "resnet50": {
+    "swin_small_22k": {
       "tp": {
         "border_ring": {
-          "mass_share": 0.08944123983383179,
+          "mass_share": 0.27727121114730835,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.3956105709075928,
+          "mass_share": 0.3105878233909607,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.18026071786880493,
+          "mass_share": 0.1533336490392685,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.3346872329711914,
+          "mass_share": 0.25880685448646545,
           "area_share": 0.16583625637755103
         }
       },
       "tn": {
         "border_ring": {
-          "mass_share": 0.6079747676849365,
+          "mass_share": 0.20731623470783234,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.06636687368154526,
+          "mass_share": 0.02605224773287773,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.2199718952178955,
+          "mass_share": 0.10211993753910065,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.10568749904632568,
+          "mass_share": 0.03951180353760719,
           "area_share": 0.16583625637755103
         }
       },
       "fp": {
         "border_ring": {
-          "mass_share": 0.17907452583312988,
+          "mass_share": 0.3588622808456421,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.34493571519851685,
+          "mass_share": 0.2459697127342224,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.18454691767692566,
+          "mass_share": 0.19722619652748108,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.29144197702407837,
+          "mass_share": 0.19794388115406036,
           "area_share": 0.16583625637755103
         }
       },
       "fn": {
         "border_ring": {
-          "mass_share": 0.5433133840560913,
+          "mass_share": 0.39028456807136536,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.1290178894996643,
+          "mass_share": 0.06832018494606018,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.2139081209897995,
+          "mass_share": 0.2854650616645813,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.11376039683818817,
+          "mass_share": 0.13093066215515137,
           "area_share": 0.16583625637755103
         }
       },
       "robust_by_condition": {
         "clean": {
           "border_ring": {
-            "mass_share": 0.3326203525066376,
+            "mass_share": 0.2904456555843353,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.24530743062496185,
+            "mass_share": 0.15566909313201904,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.19008605182170868,
+            "mass_share": 0.07697542011737823,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.23198288679122925,
+            "mass_share": 0.14357559382915497,
             "area_share": 0.16583625637755103
           }
         },
         "jpeg_q30": {
           "border_ring": {
-            "mass_share": 0.3118637800216675,
+            "mass_share": 0.2929556369781494,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.26259317994117737,
+            "mass_share": 0.16117285192012787,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.18854862451553345,
+            "mass_share": 0.07196038961410522,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.23699331283569336,
+            "mass_share": 0.14057821035385132,
             "area_share": 0.16583625637755103
           }
         },
         "blur_sigma2": {
           "border_ring": {
-            "mass_share": 0.3478057384490967,
+            "mass_share": 0.3387938439846039,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.22410006821155548,
+            "mass_share": 0.1590498685836792,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.1908816546201706,
+            "mass_share": 0.17875730991363525,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.23721297085285187,
+            "mass_share": 0.1567329317331314,
             "area_share": 0.16583625637755103
           }
         },
         "noise_std10": {
           "border_ring": {
-            "mass_share": 0.3197647035121918,
+            "mass_share": 0.2900680601596832,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.24745456874370575,
+            "mass_share": 0.15586768090724945,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.20041318237781525,
+            "mass_share": 0.0777103379368782,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.23236775398254395,
+            "mass_share": 0.14302130043506622,
             "area_share": 0.16583625637755103
           }
         }
       },
       "corr_with_clean": {
-        "jpeg_q30": 0.9709840267409753,
-        "blur_sigma2": 0.9407122261743476,
-        "noise_std10": 0.96352978242387
+        "jpeg_q30": 0.9852973449473166,
+        "blur_sigma2": 0.9944552714682054,
+        "noise_std10": 0.9821350538861793
       }
     },
-    "convnext_small": {
+    "convnext_small_22k": {
       "tp": {
         "border_ring": {
-          "mass_share": 0.029677577316761017,
+          "mass_share": 0.08555234223604202,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.5727586150169373,
+          "mass_share": 0.38793355226516724,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.03400634974241257,
+          "mass_share": 0.17183685302734375,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.36355796456336975,
+          "mass_share": 0.3546777069568634,
           "area_share": 0.16583625637755103
         }
       },
       "tn": {
         "border_ring": {
-          "mass_share": 0.5617777109146118,
+          "mass_share": 0.5347073674201965,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.09369748085737228,
+          "mass_share": 0.11606155335903168,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.2017081081867218,
+          "mass_share": 0.17164775729179382,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.14281868934631348,
+          "mass_share": 0.1775815486907959,
           "area_share": 0.16583625637755103
         }
       },
       "fp": {
         "border_ring": {
-          "mass_share": 0.06079297512769699,
+          "mass_share": 0.24883228540420532,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.5420305728912354,
+          "mass_share": 0.2676985263824463,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.07256881147623062,
+          "mass_share": 0.2112642079591751,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.32460787892341614,
+          "mass_share": 0.2722046971321106,
           "area_share": 0.16583625637755103
         }
       },
       "fn": {
         "border_ring": {
-          "mass_share": 0.5417028665542603,
+          "mass_share": 0.41952991485595703,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.1252647042274475,
+          "mass_share": 0.14827673137187958,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.17242586612701416,
+          "mass_share": 0.2056395709514618,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.1606084257364273,
+          "mass_share": 0.22655394673347473,
           "area_share": 0.16583625637755103
         }
       },
       "robust_by_condition": {
         "clean": {
           "border_ring": {
-            "mass_share": 0.2541607618331909,
+            "mass_share": 0.30757957696914673,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.4013834297657013,
+            "mass_share": 0.25781893730163574,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.08232740312814713,
+            "mass_share": 0.16942541301250458,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.26212871074676514,
+            "mass_share": 0.26517507433891296,
             "area_share": 0.16583625637755103
           }
         },
         "jpeg_q30": {
           "border_ring": {
-            "mass_share": 0.2562960684299469,
+            "mass_share": 0.3021765947341919,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.3759281635284424,
+            "mass_share": 0.2643604874610901,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.08088088780641556,
+            "mass_share": 0.16423265635967255,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.28689315915107727,
+            "mass_share": 0.2692294716835022,
             "area_share": 0.16583625637755103
           }
         },
         "blur_sigma2": {
           "border_ring": {
-            "mass_share": 0.2328266054391861,
+            "mass_share": 0.3003730773925781,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.39783337712287903,
+            "mass_share": 0.25555935502052307,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.07001369446516037,
+            "mass_share": 0.1659284085035324,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.29932597279548645,
+            "mass_share": 0.27813920378685,
             "area_share": 0.16583625637755103
           }
         },
         "noise_std10": {
           "border_ring": {
-            "mass_share": 0.2444213181734085,
+            "mass_share": 0.2951549291610718,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.4041851758956909,
+            "mass_share": 0.25753721594810486,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.07503237575292587,
+            "mass_share": 0.17470766603946686,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.27636393904685974,
+            "mass_share": 0.272601455450058,
             "area_share": 0.16583625637755103
           }
         }
       },
       "corr_with_clean": {
-        "jpeg_q30": 0.971427930576295,
-        "blur_sigma2": 0.8972536790512414,
-        "noise_std10": 0.9808328208827679
+        "jpeg_q30": 0.9800151327504709,
+        "blur_sigma2": 0.9779063913991385,
+        "noise_std10": 0.975250573500747
       }
     },
-    "swin_t": {
+    "maxvit_t": {
       "tp": {
         "border_ring": {
-          "mass_share": 0.16709691286087036,
+          "mass_share": 0.36620840430259705,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.4040890336036682,
+          "mass_share": 0.204276442527771,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.1347973644733429,
+          "mass_share": 0.20229631662368774,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.29401734471321106,
+          "mass_share": 0.22721928358078003,
           "area_share": 0.16583625637755103
         }
       },
       "tn": {
         "border_ring": {
-          "mass_share": 0.05526105687022209,
+          "mass_share": 0.8178831338882446,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.0051602572202682495,
+          "mass_share": 0.038570336997509,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.053398627787828445,
+          "mass_share": 0.07910741865634918,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.011180100031197071,
+          "mass_share": 0.06444129347801208,
           "area_share": 0.16583625637755103
         }
       },
       "fp": {
         "border_ring": {
-          "mass_share": 0.22954028844833374,
+          "mass_share": 0.345520943403244,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.3887001574039459,
+          "mass_share": 0.2303440272808075,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.11878407746553421,
+          "mass_share": 0.21034203469753265,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.26297545433044434,
+          "mass_share": 0.21379414200782776,
           "area_share": 0.16583625637755103
         }
       },
       "fn": {
         "border_ring": {
-          "mass_share": 0.14510738849639893,
+          "mass_share": 0.722926139831543,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.06201361119747162,
+          "mass_share": 0.05603845417499542,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.023248206824064255,
+          "mass_share": 0.128350168466568,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.08213064074516296,
+          "mass_share": 0.09268717467784882,
           "area_share": 0.16583625637755103
         }
       },
       "robust_by_condition": {
         "clean": {
           "border_ring": {
-            "mass_share": 0.07373103499412537,
+            "mass_share": 0.5958988070487976,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.22309140861034393,
+            "mass_share": 0.1317327618598938,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.05625652149319649,
+            "mass_share": 0.13718047738075256,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.14692194759845734,
+            "mass_share": 0.13518783450126648,
             "area_share": 0.16583625637755103
           }
         },
         "jpeg_q30": {
           "border_ring": {
-            "mass_share": 0.09984567016363144,
+            "mass_share": 0.5632445812225342,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.3572806417942047,
+            "mass_share": 0.1510937660932541,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.057748597115278244,
+            "mass_share": 0.134178027510643,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.1517927497625351,
+            "mass_share": 0.15148507058620453,
             "area_share": 0.16583625637755103
           }
         },
         "blur_sigma2": {
           "border_ring": {
-            "mass_share": 0.1207648515701294,
+            "mass_share": 0.5784417986869812,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.26204630732536316,
+            "mass_share": 0.1500544250011444,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.05630093440413475,
+            "mass_share": 0.12109040468931198,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.2275543063879013,
+            "mass_share": 0.15041403472423553,
             "area_share": 0.16583625637755103
           }
         },
         "noise_std10": {
           "border_ring": {
-            "mass_share": 0.09269141405820847,
+            "mass_share": 0.5667924284934998,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.33125925064086914,
+            "mass_share": 0.134313702583313,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.05361953750252724,
+            "mass_share": 0.15269427001476288,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.18909622728824615,
+            "mass_share": 0.14620085060596466,
             "area_share": 0.16583625637755103
           }
         }
       },
       "corr_with_clean": {
-        "jpeg_q30": 0.9974962741651611,
-        "blur_sigma2": 0.9953703997682548,
-        "noise_std10": 0.993102760375281
+        "jpeg_q30": 0.9414903534303423,
+        "blur_sigma2": 0.9267871731381488,
+        "noise_std10": 0.9246569098175624
+      }
+    },
+    "convnext_base": {
+      "tp": {
+        "border_ring": {
+          "mass_share": 0.06986323744058609,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.6073117852210999,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.04990588128566742,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.2729179561138153,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "tn": {
+        "border_ring": {
+          "mass_share": 0.5014348030090332,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.06183616816997528,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.30235403776168823,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.13437612354755402,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fp": {
+        "border_ring": {
+          "mass_share": 0.14700433611869812,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.38086363673210144,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.18172800540924072,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.29040446877479553,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "fn": {
+        "border_ring": {
+          "mass_share": 0.4090350270271301,
+          "area_share": 0.5087492028061225
+        },
+        "eye_band": {
+          "mass_share": 0.11131595820188522,
+          "area_share": 0.16270727040816327
+        },
+        "mouth_band": {
+          "mass_share": 0.3058689832687378,
+          "area_share": 0.16270727040816327
+        },
+        "centre_other": {
+          "mass_share": 0.1737804263830185,
+          "area_share": 0.16583625637755103
+        }
+      },
+      "robust_by_condition": {
+        "clean": {
+          "border_ring": {
+            "mass_share": 0.3223171532154083,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.37433838844299316,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.10057681053876877,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.20276765525341034,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "jpeg_q30": {
+          "border_ring": {
+            "mass_share": 0.3103865087032318,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.3698681890964508,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.10889312624931335,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.21084952354431152,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "blur_sigma2": {
+          "border_ring": {
+            "mass_share": 0.30777645111083984,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.3693678081035614,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.11203368753194809,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.21082358062267303,
+            "area_share": 0.16583625637755103
+          }
+        },
+        "noise_std10": {
+          "border_ring": {
+            "mass_share": 0.31691333651542664,
+            "area_share": 0.5087492028061225
+          },
+          "eye_band": {
+            "mass_share": 0.37702882289886475,
+            "area_share": 0.16270727040816327
+          },
+          "mouth_band": {
+            "mass_share": 0.10255258530378342,
+            "area_share": 0.16270727040816327
+          },
+          "centre_other": {
+            "mass_share": 0.2035023421049118,
+            "area_share": 0.16583625637755103
+          }
+        }
+      },
+      "corr_with_clean": {
+        "jpeg_q30": 0.9832059618446939,
+        "blur_sigma2": 0.9778419728820934,
+        "noise_std10": 0.993044795338025
       }
     },
     "ensemble": {
       "tp": {
         "border_ring": {
-          "mass_share": 0.1165357232093811,
+          "mass_share": 0.21231411397457123,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.43903452157974243,
+          "mass_share": 0.3711158037185669,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.12663471698760986,
+          "mass_share": 0.13791851699352264,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.3177948296070099,
+          "mass_share": 0.27865108847618103,
           "area_share": 0.16583625637755103
         }
       },
       "tn": {
         "border_ring": {
-          "mass_share": 0.5819095373153687,
+          "mass_share": 0.628889262676239,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.08490164577960968,
+          "mass_share": 0.06884396076202393,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.20361778140068054,
+          "mass_share": 0.18775975704193115,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.12957024574279785,
+          "mass_share": 0.1145048514008522,
           "area_share": 0.16583625637755103
         }
       },
       "fp": {
         "border_ring": {
-          "mass_share": 0.1699669361114502,
+          "mass_share": 0.29113948345184326,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.41113731265068054,
+          "mass_share": 0.29543536901474,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.1317479908466339,
+          "mass_share": 0.1691620796918869,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.28714805841445923,
+          "mass_share": 0.24426360428333282,
           "area_share": 0.16583625637755103
         }
       },
       "fn": {
         "border_ring": {
-          "mass_share": 0.5401180982589722,
+          "mass_share": 0.5498620271682739,
           "area_share": 0.5087492028061225
         },
         "eye_band": {
-          "mass_share": 0.1294981986284256,
+          "mass_share": 0.09193097054958344,
           "area_share": 0.16270727040816327
         },
         "mouth_band": {
-          "mass_share": 0.1825723648071289,
+          "mass_share": 0.2107997089624405,
           "area_share": 0.16270727040816327
         },
         "centre_other": {
-          "mass_share": 0.14781108498573303,
+          "mass_share": 0.14740511775016785,
           "area_share": 0.16583625637755103
         }
       },
       "robust_by_condition": {
         "clean": {
           "border_ring": {
-            "mass_share": 0.3173138201236725,
+            "mass_share": 0.41559353470802307,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.31540733575820923,
+            "mass_share": 0.2421528697013855,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.1325814425945282,
+            "mass_share": 0.1413269340991974,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.23469685018062592,
+            "mass_share": 0.20092719793319702,
             "area_share": 0.16583625637755103
           }
         },
         "jpeg_q30": {
           "border_ring": {
-            "mass_share": 0.3070339262485504,
+            "mass_share": 0.4101697504520416,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.32340121269226074,
+            "mass_share": 0.24707317352294922,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.1303965002298355,
+            "mass_share": 0.1392928659915924,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.2391681671142578,
+            "mass_share": 0.20346228778362274,
             "area_share": 0.16583625637755103
           }
         },
         "blur_sigma2": {
           "border_ring": {
-            "mass_share": 0.29515621066093445,
+            "mass_share": 0.4098621904850006,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.32597121596336365,
+            "mass_share": 0.24696876108646393,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.12649111449718475,
+            "mass_share": 0.1417134553194046,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.25238320231437683,
+            "mass_share": 0.20145468413829803,
             "area_share": 0.16583625637755103
           }
         },
         "noise_std10": {
           "border_ring": {
-            "mass_share": 0.29449328780174255,
+            "mass_share": 0.409784197807312,
             "area_share": 0.5087492028061225
           },
           "eye_band": {
-            "mass_share": 0.3322170078754425,
+            "mass_share": 0.23968948423862457,
             "area_share": 0.16270727040816327
           },
           "mouth_band": {
-            "mass_share": 0.12844984233379364,
+            "mass_share": 0.1481103152036667,
             "area_share": 0.16270727040816327
           },
           "centre_other": {
-            "mass_share": 0.24484187364578247,
+            "mass_share": 0.20241551101207733,
             "area_share": 0.16583625637755103
           }
         }
       },
       "corr_with_clean": {
-        "jpeg_q30": 0.9812163575665517,
-        "blur_sigma2": 0.9148850674260758,
-        "noise_std10": 0.9734673031869235
+        "jpeg_q30": 0.9932330836986284,
+        "blur_sigma2": 0.9904228437241467,
+        "noise_std10": 0.9919206835662996
       }
     }
   }

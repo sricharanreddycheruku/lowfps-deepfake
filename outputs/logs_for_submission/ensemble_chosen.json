@@ -1,44 +1,36 @@
 {
   "members": [
-    "final_resnet50",
-    "e_cnxt_small",
-    "final_swin_t"
+    "v20_full_s42_swin22k",
+    "v20_full_s42_cnxt22k",
+    "v20_full_s42_maxvit",
+    "v20_full_s42_cnxt_base",
+    "v20_full_s7_swin22k",
+    "v20_full_s7_cnxt22k",
+    "v20_full_s7_maxvit",
+    "v20_full_s7_cnxt_base"
   ],
   "ckpts": [
-    "outputs/runs/final_resnet50/best.pt",
-    "outputs/runs/e_cnxt_small/best.pt",
-    "outputs/runs/final_swin_t/best.pt"
+    "runs/swin22k_s42/fixed.pt",
+    "runs/cnxt22k_s42/fixed.pt",
+    "runs/maxvit_s42/fixed.pt",
+    "runs/cnxt_base_s42/fixed.pt",
+    "runs/swin22k_s7/fixed.pt",
+    "runs/cnxt22k_s7/fixed.pt",
+    "runs/maxvit_s7/fixed.pt",
+    "runs/cnxt_base_s7/fixed.pt"
   ],
   "fusion": "mean_logit",
   "weights": [
-    0.3333333333333333,
-    0.3333333333333333,
-    0.3333333333333333
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125
   ],
   "tta": true,
   "threshold_policy": "fixed_0.5",
-  "threshold": 0.5,
-  "threshold_candidates": {
-    "youden_j": {
-      "threshold": 0.5195416212081909,
-      "mean_f1": 0.8792053279293698,
-      "std_f1": 0.006766029617989719
-    },
-    "best_f1": {
-      "threshold": 0.5195000171661377,
-      "mean_f1": 0.8792053279293698,
-      "std_f1": 0.006766029617989719
-    },
-    "fixed_0.5": {
-      "threshold": 0.5,
-      "mean_f1": 0.8787819916605383,
-      "std_f1": 0.0065341620655107995
-    }
-  },
-  "val": {
-    "clean_auc": 0.9064931631796461,
-    "mean_auc": 0.9055162990836044,
-    "worst_auc": 0.9016399893452149,
-    "std_auc": 0.0014639573562532455
-  }
+  "threshold": 0.5
 }

@@ -42,6 +42,7 @@ SUPPORTED_ARCHS = [
     "swin_base_22k",
     "effv2s_21k",
     "dino_vits16",
+    "vit_b16_21k",
 ]
 
 # timm weight tag and the input normalisation that backbone was pretrained with
@@ -57,6 +58,9 @@ TIMM_ARCHS = {
                       (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
     "effv2s_21k": ("tf_efficientnetv2_s.in21k_ft_in1k",
                    (0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    # ViT-B/16, AugReg2 recipe: ImageNet-21k pretraining, fine-tuned on ImageNet-1k.
+    "vit_b16_21k": ("vit_base_patch16_224.augreg2_in21k_ft_in1k",
+                    (0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
 }
 
 IMAGENET_MEAN = (0.485, 0.456, 0.406)
@@ -351,6 +355,8 @@ def gradcam_target_layer(arch, model):
         return model.backbone.norm
     if arch == "effv2s_21k":
         return model.backbone.bn2
+    if arch == "vit_b16_21k":
+        return model.backbone.blocks[-1]
     raise ValueError(f"unsupported arch: {arch}")
 
 

@@ -1,0 +1,82 @@
+{
+ "validation_against_v20": {
+  "clean_tta": true,
+  "default_mean": true,
+  "default_worst": true,
+  "pixelate8": true
+ },
+ "members": {
+  "vit21k": {
+   "clean_tta": 0.9001526264384649,
+   "clean_no_tta": 0.9001526264384649,
+   "default_mean": 0.8986584282558222,
+   "default_worst": 0.8900538600872067,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8347982891732212
+  },
+  "effv2s": {
+   "clean_tta": 0.9009106155704437,
+   "clean_no_tta": 0.9009106155704437,
+   "default_mean": 0.8989998851605829,
+   "default_worst": 0.8916189015141496,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8275397166712546
+  },
+  "cnxt_base": {
+   "clean_tta": 0.8814879298088185,
+   "clean_no_tta": 0.8814879298088185,
+   "default_mean": 0.8796114864679331,
+   "default_worst": 0.8716699908796397,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8214507005827822
+  }
+ },
+ "sets": {
+  "A": {
+   "clean_tta": 0.9080302438071839,
+   "clean_no_tta": 0.9080302438071839,
+   "default_mean": 0.9068097187750851,
+   "default_worst": 0.901775629339151,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8615496318385151
+  },
+  "V": {
+   "clean_tta": 0.9076914140934221,
+   "clean_no_tta": 0.9076914140934221,
+   "default_mean": 0.9067187801171454,
+   "default_worst": 0.9017507712141443,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.861994465740524
+  },
+  "V2": {
+   "clean_tta": 0.9079617513051128,
+   "clean_no_tta": 0.9079617513051128,
+   "default_mean": 0.9068981471297611,
+   "default_worst": 0.9016836665220079,
+   "default_worst_view": "downscale_0.25",
+   "pixelate8": 0.8616437171884995
+  }
+ },
+ "gates": {
+  "V": {
+   "clean_tta_gain": -0.00033882971376175686,
+   "default_mean_gain": -9.09386579397431e-05,
+   "default_worst_gain": -2.485812500674367e-05,
+   "pixelate8_gain": 0.00044483390200888984,
+   "pass": false
+  },
+  "V2": {
+   "clean_tta_gain": -6.849250207108248e-05,
+   "default_mean_gain": 8.842835467604004e-05,
+   "default_worst_gain": -9.196281714307641e-05,
+   "pixelate8_gain": 9.408534998445184e-05,
+   "pass": false
+  }
+ },
+ "rule": {
+  "clean_tta": 0.0015,
+  "default_mean": 0.001,
+  "default_worst": -0.002,
+  "pixelate8": -0.005
+ }
+}

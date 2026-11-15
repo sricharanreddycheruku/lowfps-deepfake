@@ -1,0 +1,42 @@
+{
+  "round": "v21",
+  "written": "2026-11-14 ~20:15 IST, before any v21 model was trained or scored (recipe revised once at ~20:15 from public write-ups, still before any training)",
+  "question": "Does replacing ConvNeXt-B in the shipped set A with a ViT-B/16 (AugReg2, ImageNet-21k pretraining) improve pooled five-fold out-of-fold AUC without hurting robustness?",
+  "motivation": "ConvNeXt-B is the weakest set-A member (pooled clean 0.8815). Public Synergy '26 write-ups report this ViT-B checkpoint as their strongest single backbone on their own grouped folds. Our earlier ViT-B/16 try used torchvision ImageNet-1k weights, not this checkpoint. A third public write-up reports pooled OOF 0.907 for this ViT-B (6 epochs, backbone lr 3e-5, head 3e-4) and 0.907 for EfficientNetV2-S on its own folds.",
+  "reference": "set A = cnxt22k + swin22k + maxvit + cnxt_base (outputs/ablations/v20/pooled_oof.json)",
+  "ship_rule": {
+    "all_of": [
+      "pooled clean AUC gain (candidate - A) >= +0.0015",
+      "pooled mean AUC over the 22 default views gain >= +0.0010",
+      "pooled worst default-view AUC gain >= -0.0020",
+      "pooled pixelate8 AUC gain >= -0.0050",
+      "T4 estimate <= 240 s, scaled from the measured 202.1 s cold by per-image GFLOPs of the members (each refit at seeds 42 and 7)"
+    ],
+    "if_pass": "refit the new members on all rows at seeds 42 and 7 (fixed.pt at each member's save_at epoch), build a bundle with cnxt_base replaced, rerun inference twice (byte-identical), check_predictions, Spearman vs shipped v20 predictions >= 0.95 (broken-model gate only), re-time on a T4 before shipping",
+    "if_fail": "ship the v20 bundle unchanged",
+    "choice": "if both pass, ship the one with higher pooled clean AUC; if within 0.0005, ship the cheaper (V)"
+  },
+  "results": {
+    "scored": "2026-11-14, five-fold OOF logits of vit21k and effv2s (one run per fold, as registered); set-A member logits reused from v20; AUC method validated against the four recorded v20 set-A numbers to < 1e-9. Full table in outputs/ablations/v21/pooled_oof_v21.json.",
+    "single_members_pooled_clean_tta": {"vit21k": 0.90015, "effv2s": 0.90091, "cnxt_base": 0.88149},
+    "set_A_reference": {"clean_tta": 0.908030, "default_mean": 0.906810, "default_worst": 0.901776, "pixelate8": 0.861550},
+    "V_gain_vs_A": {"clean_tta": -0.00034, "default_mean": -0.00009, "default_worst": -0.00002, "pixelate8": 0.00044, "pass": false},
+    "V2_gain_vs_A": {"clean_tta": -0.00007, "default_mean": 0.00009, "default_worst": -0.00009, "pixelate8": 0.00009, "pass": false},
+    "decision": "Neither V nor V2 passes the ship rule: both fail the primary clean-AUC gain (>= +0.0015; both are negative), and V2 also misses the default-mean gain. Although vit21k and effv2s are much stronger single members than cnxt_base, the set-A members are already strong and correlated, so swapping in a more-correlated member does not lift the fused clean AUC. Shipping the v20 bundle unchanged, as pre-registered under if_fail. No bundle rebuilt, no inference-script change, no T4 re-timing (gates did not pass). The effv2s seed-42 refit OOM failure on user7 is moot (effv2s not shipped)."
+  },
+  "candidates": {
+    "V": "cnxt22k + swin22k + maxvit + vit21k",
+    "V2": "cnxt22k + swin22k + maxvit + vit21k + effv2s"
+  },
+  "new_members": {
+    "vit21k": {
+      "arch": "vit_b16_21k (timm vit_base_patch16_224.augreg2_in21k_ft_in1k)",
+      "recipe": "v20 recipe flags (ema 0.99, label smoothing 0.05, aug strong, conflict drop, mosaic 0.5/16, sbi 0.15, paired_target_mix 0.5, bs 48, seed 42) with epochs 6, save_at 6, lr 3e-4, backbone_lr_mult 0.1"
+    },
+    "effv2s": {
+      "arch": "efficientnet_v2_s (torchvision ImageNet-1k)",
+      "recipe": "same flags with epochs 12, save_at 11, lr 5e-4, backbone_lr_mult 0.2"
+    }
+  },
+  "folds": "split_v1.csv (fold 0) and split_v1_fold1..4.csv, fixed.pt scored with outputs/ablations/v14/score_views.py; one run per fold, no second attempt scored against this rule"
+}

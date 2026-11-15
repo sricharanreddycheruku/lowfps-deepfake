@@ -46,7 +46,6 @@ On the RTX 4060 Ti the shipped script takes 101 s for the 3,000 test images (bat
 
 ## Bonus items and limits
 
-- **Grad-CAM and TensorFlow export.** Both cover the previous six-member system (v11), not the final bundle.
-  - Grad-CAM uses our own implementation. All members attend to the inner face, mainly the eye and upper-nose region, not the border, and the maps stay stable under JPEG, blur and noise.
-  - The TensorFlow export matches PyTorch to 3.0e-07 in confidence on 500 validation images. Swin-T is rebuilt directly in TensorFlow ops.
+- **Grad-CAM.** Maps of the shipped v20 bundle (all eight members), our own implementation. All four architectures attend to the inner face, mainly the eye and upper-nose region (ensemble eye-band enrichment 2.3 on detected fakes), not the border, and the maps stay stable under JPEG, blur and noise (correlation with the clean map 0.99). The refit members saw the mapped validation images in training, so the maps show where the deployed model looks, not held-out behaviour.
+- **TensorFlow export.** It covers the previous six-member system (v11), not the final bundle, and matches PyTorch to 3.0e-07 in confidence on 500 validation images. Swin-T is rebuilt directly in TensorFlow ops.
 - **Main limits.** Validation comes from the training distribution, so generalisation to unseen generators is untested. The labels contain conflicting near-duplicates. The final weights have no held-out score.
