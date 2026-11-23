@@ -6,12 +6,10 @@ This study documents the systematic progression from the v11 6-member baseline t
 
 ## 1. Multi-Cluster Architecture & Hardware Utilization
 
-To ensure relentless progress without interruption toward the Sunday deadline (15 Nov 2026), work is distributed across 3 dedicated NVIDIA GeForce RTX 4060 Ti (16 GB VRAM) compute nodes:
-- **Node 1 (`sem8@172.16.121.36`):** Dedicated full-data production training (100% dataset) & inference latency verification.
-- **Node 2 (`user7@172.16.121.24`):** Exploration of modern architectural paradigms on Fold 0 (ImageNet-22k ConvNeXt, MaxViT-T).
-- **Node 3 (`user8@172.16.121.19`):** Independent replication and cross-validation on Fold 4 (ImageNet-22k Swin-Transformer, MaxViT-T).
-
-Strict storage isolation is maintained: all runs on shared nodes execute inside `~/deepfake_work`, using <110 MB of disk space (<0.4% host storage), leaving other users' files completely untouched.
+Work was split across 3 NVIDIA GeForce RTX 4060 Ti (16 GB) machines:
+- **Machine 1:** Dedicated full-data production training (100% dataset) & inference latency verification.
+- **Machine 2:** Exploration of modern architectural paradigms on Fold 0 (ImageNet-22k ConvNeXt, MaxViT-T).
+- **Machine 3:** Independent replication and cross-validation on Fold 4 (ImageNet-22k Swin-Transformer, MaxViT-T).
 
 ---
 
