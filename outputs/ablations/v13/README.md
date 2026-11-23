@@ -19,7 +19,7 @@ Evaluate original and horizontal flip and average their logits for each image.
 Report clean, mean and worst AUC over the existing 23-variant suite, plus
 pixelate8 AUC. Compare to the matched control with 1,000 paired bootstrap draws
 that resample whole near-duplicate groups. The default-suite switching rule
-for the shipped ensemble remains the one in docs/HANDOFF.md. A single-model
+for the shipped ensemble remains the one in docs/technical_report.md (section 5). A single-model
 screen can identify candidates for that comparison.
 
 From the project root, run the split generation with
